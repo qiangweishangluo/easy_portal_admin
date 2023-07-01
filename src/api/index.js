@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function login(data) {
+export function login() {
   return request({
-    url: 'helloWorld',
+    url: '/api/banners',
     method: 'get'
   })
 }
