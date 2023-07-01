@@ -1,51 +1,43 @@
-'use strict'
 const path = require('path')
-const defaultSettings = require('./src/settings.js')
 
-function resolve(dir) {
+const resolve = dir => {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Element Admin' // page title
+// 项目部署基础
+// 默认情况下，我们假设你的应用将被部署在域的根目录下,
+// 例如：https://www.my-app.com/
+// 默认：'/'
+// 如果您的应用程序部署在子路径中，则需要在这指定子路径
+// 例如：https://www.foobar.com/my-app/
+// 需要将它改为'/my-app/'
+// iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
+const BASE_URL = process.env.NODE_ENV === 'production'
+  ? '/'
+  : '/'
 
-// If your port is set to 80,
-// use administrator privileges to execute the command line.
-// For example, Mac: sudo npm run
-// You can change the port by the following method:
-// port = 9527 npm run dev OR npm run dev --port = 9527
-const port = process.env.port || process.env.npm_config_port || 9527 // dev port
-
-// All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
-  /**
-   * You will need to set publicPath if you plan to deploy your site under a sub path,
-   * for example GitHub Pages. If you plan to deploy your site to https://foo.github.io/bar/,
-   * then publicPath should be set to "/bar/".
-   * In most cases please use '/' !!!
-   * Detail: https://cli.vuejs.org/config/#publicpath
-   */
-  // publicPath: '/',
-  outputDir: 'dist',
-  assetsDir: 'static',
-  productionSourceMap: false,
-  devServer: {
-    open: true,
-    proxy: {
-      "/api": {
-        target: "http://47.95.37.110:8000",
-        ws: true,
-        changeOrigin: true
-      }
-    }
+  // Project deployment base
+  // By default we assume your app will be deployed at the root of a domain,
+  // e.g. https://www.my-app.com/
+  // If your app is deployed at a sub-path, you will need to specify that
+  // sub-path here. For example, if your app is deployed at
+  // https://www.foobar.com/my-app/
+  // then change this to '/my-app/'
+  baseUrl: BASE_URL,
+  // tweak internal webpack configuration.
+  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
+  // 如果你不需要使用eslint，把lintOnSave设为false即可
+  lintOnSave: true,
+  chainWebpack: config => {
+    config.resolve.alias
+      .set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
+      .set('_c', resolve('src/components'))
   },
-  configureWebpack: {
-    // provide the app's title in webpack's name field, so that
-    // it can be accessed in index.html to inject the correct title.
-    name: name,
-    resolve: {
-      alias: {
-        '@': resolve('src')
-      }
-    }
-  },
+  // 设为false打包时不生成.map文件
+  productionSourceMap: false
+  // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
+  // devServer: {
+  //   proxy: 'localhost:3000'
+  // }
 }
