@@ -51,6 +51,46 @@ export default [
     ]
   },
   {
+    path: '/',
+    name: 'admin',
+    redirect: '/admin',
+    component: Main,
+    meta: {
+    },
+    children: [
+      {
+        path: '/banners',
+        name: '轮播管理',
+        meta: {
+          title: '轮播管理',
+          notCache: true,
+          icon: 'md-home'
+        },
+        component: () => import('@/view/banner')
+      }
+    ]
+  },
+  {
+    path: '/',
+    name: 'admin',
+    redirect: '/admin',
+    component: Main,
+    meta: {
+    },
+    children: [
+      {
+        path: '/announcements',
+        name: '公告管理',
+        meta: {
+          title: '公告管理',
+          notCache: true,
+          icon: 'md-home'
+        },
+        component: () => import('@/view/announcements')
+      }
+    ]
+  },
+  {
     path: '',
     name: 'doc',
     meta: {
@@ -64,7 +104,8 @@ export default [
     name: 'join',
     component: Main,
     meta: {
-      hideInBread: true
+      hideInBread: true,
+      hideInMenu: true
     },
     children: [
       {
