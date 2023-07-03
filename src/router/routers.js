@@ -27,35 +27,36 @@ export default [
     },
     component: () => import('@/view/login/login.vue')
   },
-  {
-    path: '/',
-    name: '_home',
-    redirect: '/home',
-    component: Main,
-    meta: {
-      hideInMenu: true,
-      notCache: true
-    },
-    children: [
-      {
-        path: '/home',
-        name: 'home',
-        meta: {
-          hideInMenu: true,
-          title: '首页',
-          notCache: true,
-          icon: 'md-home'
-        },
-        component: () => import('@/view/single-page/home')
-      }
-    ]
-  },
+  // {
+  //   path: '/',
+  //   name: 'admin',
+  //   redirect: '/banners',
+  //   component: Main,
+  //   meta: {
+  //     hideInMenu: true,
+  //     notCache: true
+  //   },
+  //   children: [
+  //     {
+  //       path: '/home',
+  //       name: 'home',
+  //       meta: {
+  //         hideInMenu: true,
+  //         title: '首页',
+  //         notCache: true,
+  //         icon: 'md-home'
+  //       },
+  //       component: () => import('@/view/single-page/home')
+  //     }
+  //   ]
+  // },
   {
     path: '/',
     name: 'admin',
-    redirect: '/admin',
+    redirect: '/banners',
     component: Main,
     meta: {
+      icon: 'md-home'
     },
     children: [
       {
@@ -67,26 +68,26 @@ export default [
           icon: 'md-home'
         },
         component: () => import('@/view/banner')
-      }
-    ]
-  },
-  {
-    path: '/',
-    name: 'admin',
-    redirect: '/admin',
-    component: Main,
-    meta: {
-    },
-    children: [
+      },
       {
         path: '/announcements',
         name: '公告管理',
         meta: {
           title: '公告管理',
           notCache: true,
-          icon: 'md-home'
+          icon: 'ios-book'
         },
         component: () => import('@/view/announcements')
+      },
+      {
+        path: '/application',
+        name: '报名列表',
+        meta: {
+          title: '报名列表',
+          notCache: true,
+          icon: 'md-grid'
+        },
+        component: () => import('@/view/application')
       }
     ]
   },
