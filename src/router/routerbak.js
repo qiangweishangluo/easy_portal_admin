@@ -96,8 +96,7 @@ export default [
     meta: {
       title: '文档',
       href: 'https://lison16.github.io/iview-admin-doc/#/',
-      icon: 'ios-book',
-      hideInMenu: true
+      icon: 'ios-book'
     }
   },
   {
@@ -145,8 +144,7 @@ export default [
     name: 'components',
     meta: {
       icon: 'logo-buffer',
-      title: '组件',
-      hideInMenu: true
+      title: '组件'
     },
     component: Main,
     children: [
@@ -265,8 +263,7 @@ export default [
     name: 'update',
     meta: {
       icon: 'md-cloud-upload',
-      title: '数据上传',
-      hideInMenu: true
+      title: '数据上传'
     },
     component: Main,
     children: [
@@ -295,8 +292,7 @@ export default [
     name: 'excel',
     meta: {
       icon: 'ios-stats',
-      title: 'EXCEL导入导出',
-      hideInMenu: true
+      title: 'EXCEL导入导出'
     },
     component: Main,
     children: [
@@ -324,8 +320,7 @@ export default [
     path: '/tools_methods',
     name: 'tools_methods',
     meta: {
-      hideInBread: true,
-      hideInMenu: true
+      hideInBread: true
     },
     component: Main,
     children: [
@@ -345,8 +340,7 @@ export default [
     path: '/i18n',
     name: 'i18n',
     meta: {
-      hideInBread: true,
-      hideInMenu: true
+      hideInBread: true
     },
     component: Main,
     children: [
@@ -365,8 +359,7 @@ export default [
     path: '/error_store',
     name: 'error_store',
     meta: {
-      hideInBread: true,
-      hideInMenu: true
+      hideInBread: true
     },
     component: Main,
     children: [
@@ -405,8 +398,7 @@ export default [
     path: '/directive',
     name: 'directive',
     meta: {
-      hideInBread: true,
-      hideInMenu: true
+      hideInBread: true
     },
     component: Main,
     children: [
@@ -426,8 +418,7 @@ export default [
     name: 'multilevel',
     meta: {
       icon: 'md-menu',
-      title: '多级菜单',
-      hideInMenu: true
+      title: '多级菜单'
     },
     component: Main,
     children: [
