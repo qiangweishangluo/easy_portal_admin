@@ -28,6 +28,7 @@
   </div>
 </template>
 <script>
+import { getApplications } from "@/api/admin";
 // import { getAnnouncement, postAnnouncement } from "@/api/admin";
 
 export default {
@@ -37,7 +38,7 @@ export default {
       searchValue: "",
       columns: [
         {
-          title: "projectCode",
+          title: "项目编号",
           key: "projectCode",
         },
         {
@@ -45,31 +46,31 @@ export default {
           key: "identification",
         },
         {
-          title: "applicantName",
+          title: "联系人",
           key: "applicantName",
         },
         {
-          title: "phone",
+          title: "联系电话",
           key: "phone",
         },
         {
-          title: "address",
+          title: "联系地址",
           key: "address",
         },
         {
-          title: "company",
+          title: "投标单位名称",
           key: "company",
         },
         {
-          title: "BusinessLicense",
+          title: "营业执照编号",
           key: "BusinessLicense",
         },
         {
-          title: "corporate",
+          title: "法定代表人姓名",
           key: "corporate",
         },
         {
-          title: "Consignor",
+          title: "授权委托人姓名",
           key: "Consignor",
         },
         {
@@ -78,15 +79,9 @@ export default {
         },
       ],
       data: [],
-      tableData: [{identification:123}],
+      tableData: [],
       modal: false,
       formItem: {
-        code: "",
-        name: "",
-        type: "",
-        startTime: "",
-        endTime: "",
-        time: "",
       },
       uploadList: [],
       id: 0,
@@ -97,8 +92,19 @@ export default {
   },
   mounted() {
     this.uploadList = this.$refs.upload.fileList;
+    this.getApplications()
   },
   methods: {
+    getApplications() {
+      getApplications().then((res) => {
+        let temp = [];
+        res.data.applications.forEach(element => {
+          temp.push({ element, ...element.detail })
+        });
+        this.tableData = temp
+        console.log(temp);
+      })
+    },
     handleSearch() { },
     handleSuccess(res, file) {
       // 上传成功

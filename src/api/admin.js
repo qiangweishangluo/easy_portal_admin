@@ -30,3 +30,10 @@ export function postAnnouncement(data) {
         data: data,
     });
 }
+export function getApplications() {
+    // 获取报名信息
+    return axios.request({
+        url: "/api/applications",
+        method: "get",
+    });
+}
