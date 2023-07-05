@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
+      <Input
+        clearable
+        placeholder="输入关键字搜索"
+        class="search-input"
+        v-model="searchValue"
+      />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
@@ -16,14 +21,68 @@
       <template #file="{ row, index }">
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
+      <template #img="{ row, index }">
+        <img
+          class="tableImg"
+          :src="row.businessLicenses[0].url"
+          alt=""
+          @click="openDialog(row.businessLicenses[0].url)"
+        />
+      </template>
+      <template #img2="{ row, index }">
+        <img
+          class="tableImg"
+          :src="row.consignors[0].url"
+          alt=""
+          @click="openDialog(row.consignors[0].url)"
+        />
+      </template>
+      <template #img3="{ row, index }">
+        <img
+          class="tableImg"
+          :src="row.corporates[0].url"
+          alt=""
+          @click="openDialog(row.corporates[0].url)"
+        />
+      </template>
+      <template #img4="{ row, index }">
+        <img
+          class="tableImg"
+          :src="row.authorizations[0].url"
+          alt=""
+          @click="openDialog(row.authorizations[0].url)"
+        />
+      </template>
+      <template #img5="{ row, index }">
+        <img
+          class="tableImg"
+          :src="row.evidencePayments[0].url"
+          alt=""
+          @click="openDialog(row.evidencePayments[0].url)"
+        />
+      </template>
     </Table>
-    <Modal v-model="modal" title="上传招标文书二维码" @on-ok="ok" @on-cancel="cancel" width="700">
+    <Modal
+      v-model="modal"
+      title="上传招标文书二维码"
+      @on-ok="ok"
+      @on-cancel="cancel"
+      width="700"
+    >
       <Form ref="form" :model="formItem" :label-width="120" :key="modalKey">
-        <Upload ref="upload" action="/api/uploadSystemFile" :data="{ ' businessType': 2 }" :on-success="handleSuccess"
-          :before-upload="handleBeforeUpload">
+        <Upload
+          ref="upload"
+          action="/api/uploadSystemFile"
+          :data="{ ' businessType': 3 }"
+          :on-success="handleSuccess"
+          :before-upload="handleBeforeUpload"
+        >
           <Button icon="ios-cloud-upload-outline">上传文件</Button>
         </Upload>
       </Form>
+    </Modal>
+    <Modal v-model="modal1">
+      <img :src="tableImg" alt="" />
     </Modal>
   </div>
 </template>
@@ -74,6 +133,35 @@ export default {
           key: "Consignor",
         },
         {
+          title: "授权委托人姓名",
+          key: "Consignor",
+        },
+        {
+          title: "营业执照扫描件",
+          slot: "img",
+          key: "businessLicenses",
+        },
+        {
+          title: "授权委托人身份证扫描件",
+          slot: "img2",
+          key: "consignors",
+        },
+        {
+          title: "法定代表人身份证扫描件",
+          slot: "img3",
+          key: "corporates",
+        },
+        {
+          title: "授权委托书扫描件",
+          slot: "img4",
+          key: "authorizations",
+        },
+        {
+          title: "付款凭证",
+          slot: "img5",
+          key: "evidencePayments",
+        },
+        {
           title: "操作",
           slot: "action",
         },
@@ -81,31 +169,31 @@ export default {
       data: [],
       tableData: [],
       modal: false,
-      formItem: {
-      },
+      modal1: false,
+      formItem: {},
       uploadList: [],
       id: 0,
       modalKey: false,
+      tableImg: "",
     };
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.uploadList = this.$refs.upload.fileList;
-    this.getApplications()
+    this.getApplications();
   },
   methods: {
     getApplications() {
       getApplications().then((res) => {
         let temp = [];
-        res.data.applications.forEach(element => {
-          temp.push({ element, ...element.detail })
+        res.data.applications.forEach((element) => {
+          temp.push({ element, ...element.detail });
         });
-        this.tableData = temp
+        this.tableData = temp;
         console.log(temp);
-      })
+      });
     },
-    handleSearch() { },
+    handleSearch() {},
     handleSuccess(res, file) {
       // 上传成功
       console.log(res);
@@ -133,14 +221,17 @@ export default {
       ];
       this.modal = true;
     },
-    ok() {
-    },
+    ok() {},
     cancel() {
       // this.$Message.info('Clicked ok');
     },
     openModal() {
       this.id = 0;
       this.modal = true;
+    },
+    openDialog(data) {
+      this.tableImg = data;
+      this.modal1 = true;
     },
   },
 };
@@ -166,5 +257,8 @@ export default {
       margin-left: 2px;
     }
   }
+}
+.tableImg {
+  width: 100px;
 }
 </style>
