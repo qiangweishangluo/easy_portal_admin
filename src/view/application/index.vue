@@ -1,17 +1,15 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <Input
-        clearable
-        placeholder="输入关键字搜索"
-        class="search-input"
-        v-model="searchValue"
-      />
+      <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
-      <Button @click="openModal" class="search-btn" type="primary">
+      <Button @click="openModal(3)" class="search-btn" type="primary">
         <Icon type="create" />上传招标文书二维码
+      </Button>
+      <Button @click="openModal(9)" class="search-btn" type="primary">
+        <Icon type="create" />授权委托书模板上传
       </Button>
     </div>
     <Table :columns="columns" :data="tableData">
@@ -22,61 +20,27 @@
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
       <template #img="{ row, index }">
-        <img
-          class="tableImg"
-          :src="row.businessLicenses[0].url"
-          alt=""
-          @click="openDialog(row.businessLicenses[0].url)"
-        />
+        <img class="tableImg" :src="row.businessLicenses[0].url" alt=""
+          @click="openDialog(row.businessLicenses[0].url)" />
       </template>
       <template #img2="{ row, index }">
-        <img
-          class="tableImg"
-          :src="row.consignors[0].url"
-          alt=""
-          @click="openDialog(row.consignors[0].url)"
-        />
+        <img class="tableImg" :src="row.consignors[0].url" alt="" @click="openDialog(row.consignors[0].url)" />
       </template>
       <template #img3="{ row, index }">
-        <img
-          class="tableImg"
-          :src="row.corporates[0].url"
-          alt=""
-          @click="openDialog(row.corporates[0].url)"
-        />
+        <img class="tableImg" :src="row.corporates[0].url" alt="" @click="openDialog(row.corporates[0].url)" />
       </template>
       <template #img4="{ row, index }">
-        <img
-          class="tableImg"
-          :src="row.authorizations[0].url"
-          alt=""
-          @click="openDialog(row.authorizations[0].url)"
-        />
+        <img class="tableImg" :src="row.authorizations[0].url" alt="" @click="openDialog(row.authorizations[0].url)" />
       </template>
       <template #img5="{ row, index }">
-        <img
-          class="tableImg"
-          :src="row.evidencePayments[0].url"
-          alt=""
-          @click="openDialog(row.evidencePayments[0].url)"
-        />
+        <img class="tableImg" :src="row.evidencePayments[0].url" alt=""
+          @click="openDialog(row.evidencePayments[0].url)" />
       </template>
     </Table>
-    <Modal
-      v-model="modal"
-      title="上传招标文书二维码"
-      @on-ok="ok"
-      @on-cancel="cancel"
-      width="700"
-    >
+    <Modal v-model="modal" :title="businessType==3?'上传招标文书二维码':'授权委托书模板上传'" @on-ok="ok" @on-cancel="cancel" width="700">
       <Form ref="form" :model="formItem" :label-width="120" :key="modalKey">
-        <Upload
-          ref="upload"
-          action="/api/uploadSystemFile"
-          :data="{ ' businessType': 3 }"
-          :on-success="handleSuccess"
-          :before-upload="handleBeforeUpload"
-        >
+        <Upload ref="upload" action="/api/uploadSystemFile" :data="{ ' businessType': businessType }"
+          :on-success="handleSuccess" :before-upload="handleBeforeUpload">
           <Button icon="ios-cloud-upload-outline">上传文件</Button>
         </Upload>
       </Form>
@@ -175,9 +139,10 @@ export default {
       id: 0,
       modalKey: false,
       tableImg: "",
+      businessType: 3,
     };
   },
-  created() {},
+  created() { },
   mounted() {
     this.uploadList = this.$refs.upload.fileList;
     this.getApplications();
@@ -187,13 +152,13 @@ export default {
       getApplications().then((res) => {
         let temp = [];
         res.data.applications.forEach((element) => {
-          temp.push({ element, ...element.detail });
+          temp.push({ ...element, ...element.detail });
         });
         this.tableData = temp;
         console.log(temp);
       });
     },
-    handleSearch() {},
+    handleSearch() { },
     handleSuccess(res, file) {
       // 上传成功
       console.log(res);
@@ -215,18 +180,13 @@ export default {
     },
     handleEdit(row, index) {
       this.id = row.id;
-      this.formItem = row;
-      this.uploadList = [
-        { url: row.detail.url, fileName: row.detail.fileName },
-      ];
-      this.modal = true;
     },
-    ok() {},
+    ok() { },
     cancel() {
       // this.$Message.info('Clicked ok');
     },
-    openModal() {
-      this.id = 0;
+    openModal(data) {
+      this.businessType = data
       this.modal = true;
     },
     openDialog(data) {
@@ -258,6 +218,7 @@ export default {
     }
   }
 }
+
 .tableImg {
   width: 100px;
 }
