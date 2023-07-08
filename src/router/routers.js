@@ -56,7 +56,9 @@ export default [
     redirect: '/banners',
     component: Main,
     meta: {
-      icon: 'md-home'
+      icon: 'md-home',
+      title: '后台管理',
+      notCache: true,
     },
     children: [
       {
@@ -88,6 +90,16 @@ export default [
           icon: 'md-grid'
         },
         component: () => import('@/view/application')
+      },
+      {
+        path: '/bid',
+        name: '投标列表',
+        meta: {
+          title: '投标列表',
+          notCache: true,
+          icon: 'md-grid'
+        },
+        component: () => import('@/view/bid')
       }
     ]
   },

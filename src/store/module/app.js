@@ -39,13 +39,15 @@ export default {
     errorCount: state => state.errorList.length
   },
   mutations: {
-    setBreadCrumb (state, route) {
-      state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
+    setBreadCrumb(state, route) {
+      if (state.hasOwnProperty("homeRoute")) {
+        state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
+      }
     },
-    setHomeRoute (state, routes) {
+    setHomeRoute(state, routes) {
       state.homeRoute = getHomeRoute(routes, homeName)
     },
-    setTagNavList (state, list) {
+    setTagNavList(state, list) {
       let tagList = []
       if (list) {
         tagList = [...list]
@@ -59,13 +61,13 @@ export default {
       state.tagNavList = tagList
       setTagNavListInLocalstorage([...tagList])
     },
-    closeTag (state, route) {
+    closeTag(state, route) {
       let tag = state.tagNavList.filter(item => routeEqual(item, route))
       route = tag[0] ? tag[0] : null
       if (!route) return
       closePage(state, route)
     },
-    addTag (state, { route, type = 'unshift' }) {
+    addTag(state, { route, type = 'unshift' }) {
       let router = getRouteTitleHandled(route)
       if (!routeHasExist(state.tagNavList, router)) {
         if (type === 'push') state.tagNavList.push(router)
@@ -76,19 +78,19 @@ export default {
         setTagNavListInLocalstorage([...state.tagNavList])
       }
     },
-    setLocal (state, lang) {
+    setLocal(state, lang) {
       localSave('local', lang)
       state.local = lang
     },
-    addError (state, error) {
+    addError(state, error) {
       state.errorList.push(error)
     },
-    setHasReadErrorLoggerStatus (state, status = true) {
+    setHasReadErrorLoggerStatus(state, status = true) {
       state.hasReadErrorPage = status
     }
   },
   actions: {
-    addErrorLog ({ commit, rootState }, info) {
+    addErrorLog({ commit, rootState }, info) {
       if (!window.location.href.includes('error_logger_page')) commit('setHasReadErrorLoggerStatus', false)
       const { user: { token, userId, userName } } = rootState
       let data = {

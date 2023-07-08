@@ -37,3 +37,29 @@ export function getApplications() {
         method: "get",
     });
 }
+
+export function postApprove(data) {
+    // 报名通过
+    return axios.request({
+        url: "/api/application/approve",
+        method: "post",
+        data: data,
+    });
+}
+
+export function postReject(data) {
+    // 报名拒绝
+    return axios.request({
+        url: "/api/application/reject",
+        method: "post",
+        data: data,
+    });
+}
+
+export function getBids() {
+    // 获取投标列表
+    return axios.request({
+        url: "/api/allBids",
+        method: "get",
+    });
+}

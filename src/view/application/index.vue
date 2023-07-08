@@ -14,7 +14,11 @@
     </div>
     <Table :columns="columns" :data="tableData">
       <template #action="{ row, index }">
-        <Button @click="handleEdit(row, index)">编辑</Button>
+        <Button @click="handleEdit(row, index, 'success')">审核通过</Button>
+        <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
+      </template>
+      <template #status="{ row, index }">
+        {{ turnStatus(row.status) }}
       </template>
       <template #file="{ row, index }">
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
@@ -37,7 +41,8 @@
           @click="openDialog(row.evidencePayments[0].url)" />
       </template>
     </Table>
-    <Modal v-model="modal" :title="businessType==3?'上传招标文书二维码':'授权委托书模板上传'" @on-ok="ok" @on-cancel="cancel" width="700">
+    <Modal v-model="modal" :title="businessType == 3 ? '上传招标文书二维码' : '授权委托书模板上传'" @on-ok="ok" @on-cancel="cancel"
+      width="700">
       <Form ref="form" :model="formItem" :label-width="120" :key="modalKey">
         <Upload ref="upload" action="/api/uploadSystemFile" :data="{ ' businessType': businessType }"
           :on-success="handleSuccess" :before-upload="handleBeforeUpload">
@@ -51,7 +56,7 @@
   </div>
 </template>
 <script>
-import { getApplications } from "@/api/admin";
+import { getApplications, postApprove, postReject } from "@/api/admin";
 // import { getAnnouncement, postAnnouncement } from "@/api/admin";
 
 export default {
@@ -126,7 +131,12 @@ export default {
           key: "evidencePayments",
         },
         {
-          title: "操作",
+          title: "审核状态",
+          slot: "status",
+          key: "status",
+        },
+        {
+          title: "审核",
           slot: "action",
         },
       ],
@@ -148,6 +158,18 @@ export default {
     this.getApplications();
   },
   methods: {
+    turnStatus(data) {
+      // 0为默认值初始值  1:已通过 2:已拒绝
+      switch (data + '') {
+        case "0":
+          return "待审核"
+        case "1":
+          return "已通过"
+        case "2":
+          return "已拒绝"
+      }
+      return "--"
+    },
     getApplications() {
       getApplications().then((res) => {
         let temp = [];
@@ -178,8 +200,25 @@ export default {
       }
       return check;
     },
-    handleEdit(row, index) {
-      this.id = row.id;
+    postApprove(data) {
+      // 已通过
+      postApprove(data).then((res) => {
+        this.getApplications();
+      })
+    },
+    postReject(data) {
+      //已拒绝
+      postReject(data).then((res) => {
+        this.getApplications();
+      })
+    },
+    handleEdit(row, index, status) {
+      const temp = {
+        "id": row.id, // applicationId
+        "projectCode": row.projectCode,
+        "identification": row.identification,
+      }
+      status == 'success' ? this.postApprove(temp) : this.postReject(temp)
     },
     ok() { },
     cancel() {
