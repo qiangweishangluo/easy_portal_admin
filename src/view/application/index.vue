@@ -14,31 +14,47 @@
     </div>
     <Table :loading="loading" :columns="columns" :data="tableData">
       <template #action="{ row, index }">
-        <Button @click="handleEdit(row, index, 'success')">审核通过</Button>
+        <Button @click="handleEdit(row, index, 'success')" type="primary">审核通过</Button>
         <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
       </template>
       <template #status="{ row, index }">
-        {{ turnStatus(row.status) }}
+        <div :style="row.status == 2 ? 'color:red' : row.status == 1 ? 'color:green' : ''">
+          {{ turnStatus(row.status) }}
+        </div>
+
       </template>
       <template #file="{ row, index }">
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
       <template #img="{ row, index }">
-        <img class="tableImg" v-lazy="row.businessLicenses[0].url" alt=""
-          @click="openDialog(row.businessLicenses[0].url)" />
+        <img v-if="checkPng(row.businessLicenses[0].fileName)" class="tableImg" v-lazy="row.businessLicenses[0].url"
+          alt="" @click="openDialog(row.businessLicenses[0].url)" />
+        <a v-else :href="row.businessLicenses[0].url">{{ row.businessLicenses[0].name || row.businessLicenses[0].fileName
+        }}</a>
       </template>
       <template #img2="{ row, index }">
-        <img class="tableImg" v-lazy="row.consignors[0].url" alt="" @click="openDialog(row.consignors[0].url)" />
+        <img v-if="checkPng(row.consignors[0].fileName)" class="tableImg" v-lazy="row.consignors[0].url" alt=""
+          @click="openDialog(row.consignors[0].url)" />
+        <a v-else :href="row.consignors[0].url">{{ row.consignors[0].name || row.consignors[0].fileName
+        }}</a>
       </template>
       <template #img3="{ row, index }">
-        <img class="tableImg" v-lazy="row.corporates[0].url" alt="" @click="openDialog(row.corporates[0].url)" />
+        <img v-if="checkPng(row.corporates[0].fileName)" class="tableImg" v-lazy="row.corporates[0].url" alt=""
+          @click="openDialog(row.corporates[0].url)" />
+        <a v-else :href="row.corporates[0].url">{{ row.corporates[0].name || row.corporates[0].fileName
+        }}</a>
       </template>
       <template #img4="{ row, index }">
-        <img class="tableImg" v-lazy="row.authorizations[0].url" alt="" @click="openDialog(row.authorizations[0].url)" />
+        <img v-if="checkPng(row.authorizations[0].fileName)" class="tableImg" v-lazy="row.authorizations[0].url" alt=""
+          @click="openDialog(row.authorizations[0].url)" />
+        <a v-else :href="row.authorizations[0].url">{{ row.authorizations[0].name || row.authorizations[0].fileName
+        }}</a>
       </template>
       <template #img5="{ row, index }">
-        <img class="tableImg" v-lazy="row.evidencePayments[0].url" alt=""
-          @click="openDialog(row.evidencePayments[0].url)" />
+        <img v-if="checkPng(row.evidencePayments[0].fileName)" class="tableImg" v-lazy="row.evidencePayments[0].url"
+          alt="" @click="openDialog(row.evidencePayments[0].url)" />
+        <a v-else :href="row.evidencePayments[0].url">{{ row.evidencePayments[0].name || row.evidencePayments[0].fileName
+        }}</a>
       </template>
     </Table>
     <Modal v-model="modal" :title="businessType == 3 ? '上传招标文书二维码' : '授权委托书模板上传'" @on-ok="ok" @on-cancel="cancel"
@@ -177,6 +193,9 @@ export default {
     this.getApplications();
   },
   methods: {
+    checkPng(data) {
+      return data.includes("png") || data.includes("jpg") || data.includes("jpeg")
+    },
     turnStatus(data) {
       // 0为默认值初始值  1:已通过 2:已拒绝
       switch (data + '') {
