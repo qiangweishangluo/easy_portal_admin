@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
+      <!-- <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
-      </Button>
+      </Button> -->
       <Button @click="openModal(3)" class="search-btn" type="primary">
         <Icon type="create" />上传招标文书二维码
       </Button>
@@ -12,7 +12,7 @@
         <Icon type="create" />授权委托书模板上传
       </Button>
     </div>
-    <Table :columns="columns" :data="tableData">
+    <Table :loading="loading" :columns="columns" :data="tableData">
       <template #action="{ row, index }">
         <Button @click="handleEdit(row, index, 'success')">审核通过</Button>
         <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
@@ -24,20 +24,20 @@
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
       <template #img="{ row, index }">
-        <img class="tableImg" :src="row.businessLicenses[0].url" alt=""
+        <img class="tableImg" v-lazy="row.businessLicenses[0].url" alt=""
           @click="openDialog(row.businessLicenses[0].url)" />
       </template>
       <template #img2="{ row, index }">
-        <img class="tableImg" :src="row.consignors[0].url" alt="" @click="openDialog(row.consignors[0].url)" />
+        <img class="tableImg" v-lazy="row.consignors[0].url" alt="" @click="openDialog(row.consignors[0].url)" />
       </template>
       <template #img3="{ row, index }">
-        <img class="tableImg" :src="row.corporates[0].url" alt="" @click="openDialog(row.corporates[0].url)" />
+        <img class="tableImg" v-lazy="row.corporates[0].url" alt="" @click="openDialog(row.corporates[0].url)" />
       </template>
       <template #img4="{ row, index }">
-        <img class="tableImg" :src="row.authorizations[0].url" alt="" @click="openDialog(row.authorizations[0].url)" />
+        <img class="tableImg" v-lazy="row.authorizations[0].url" alt="" @click="openDialog(row.authorizations[0].url)" />
       </template>
       <template #img5="{ row, index }">
-        <img class="tableImg" :src="row.evidencePayments[0].url" alt=""
+        <img class="tableImg" v-lazy="row.evidencePayments[0].url" alt=""
           @click="openDialog(row.evidencePayments[0].url)" />
       </template>
     </Table>
@@ -50,8 +50,8 @@
         </Upload>
       </Form>
     </Modal>
-    <Modal v-model="modal1">
-      <img :src="tableImg" alt="" />
+    <Modal v-model="modal1" width="700">
+      <img :src="tableImg" alt="" style="display:block;width:100%" />
     </Modal>
   </div>
 </template>
@@ -66,76 +66,94 @@ export default {
       searchValue: "",
       columns: [
         {
+          width: 100,
           title: "项目编号",
           key: "projectCode",
         },
         {
+          width: 200,
           title: "密码",
           key: "identification",
         },
         {
+          width: 100,
           title: "联系人",
           key: "applicantName",
         },
         {
+          width: 100,
           title: "联系电话",
           key: "phone",
         },
         {
+          width: 200,
           title: "联系地址",
           key: "address",
         },
         {
+          width: 150,
           title: "投标单位名称",
           key: "company",
         },
         {
+          width: 150,
           title: "营业执照编号",
           key: "BusinessLicense",
         },
         {
+          width: 130,
           title: "法定代表人姓名",
           key: "corporate",
         },
         {
+          width: 130,
           title: "授权委托人姓名",
           key: "Consignor",
         },
         {
+          width: 130,
           title: "授权委托人姓名",
           key: "Consignor",
         },
         {
+          width: 200,
           title: "营业执照扫描件",
           slot: "img",
           key: "businessLicenses",
         },
         {
+          width: 200,
           title: "授权委托人身份证扫描件",
           slot: "img2",
           key: "consignors",
         },
         {
+          width: 200,
           title: "法定代表人身份证扫描件",
           slot: "img3",
           key: "corporates",
         },
         {
+          width: 200,
           title: "授权委托书扫描件",
           slot: "img4",
           key: "authorizations",
         },
         {
+          width: 200,
           title: "付款凭证",
           slot: "img5",
           key: "evidencePayments",
         },
         {
+          width: 100,
           title: "审核状态",
           slot: "status",
           key: "status",
         },
         {
+          // fixed: 'right',
+          width: 180,
           title: "审核",
           slot: "action",
         },
@@ -150,6 +168,7 @@ export default {
       modalKey: false,
       tableImg: "",
       businessType: 3,
+      loading: true,
     };
   },
   created() { },
@@ -177,7 +196,7 @@ export default {
           temp.push({ ...element, ...element.detail });
         });
         this.tableData = temp;
-        console.log(temp);
+        this.loading = false
       });
     },
     handleSearch() { },
@@ -187,8 +206,6 @@ export default {
       if (res.code == 0) {
         file.url = res.data.url;
         file.fileName = res.data.fileName;
-        // this.uploadList.push(file)
-        console.log(this.uploadList);
       }
     },
     handleBeforeUpload() {
@@ -260,5 +277,6 @@ export default {
 
 .tableImg {
   width: 100px;
+  background: #eee;
 }
 </style>

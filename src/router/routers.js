@@ -19,7 +19,7 @@ import parentView from '@/components/parent-view'
 
 export default [
   {
-    path: '/login',
+    path: '/',
     name: 'login',
     meta: {
       title: 'Login - 登录',
@@ -51,8 +51,8 @@ export default [
   //   ]
   // },
   {
-    path: '/',
-    name: 'admin',
+    path: '/banners',
+    name: '后台管理',
     redirect: '/banners',
     component: Main,
     meta: {

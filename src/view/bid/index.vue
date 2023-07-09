@@ -1,22 +1,29 @@
 <template>
   <div>
-    <div class="search-con search-con-top">
+    <!-- <div class="search-con search-con-top">
       <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
-    </div>
-    <Table :columns="columns" :data="tableData">
-      <!-- <template #action="{ row, index }">
+    </div> -->
+    <div>
+      <Table :loading="loading" :columns="columns"
+        :data="tableData ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10) : []">
+        <!-- <template #action="{ row, index }">
         <Button @click="handleEdit(row, index)">编辑</Button>
       </template> -->
-      <template #file="{ row, index }">
-        <a v-if="row.files" :href="row.files[0].url">{{ row.files[0].fileName }}</a>
-      </template>
-      <template #status="{ row, index }">
-        <div>{{ turnStatus(row.status) }}</div>
-      </template>
-    </Table>
+        <template #file="{ row, index }">
+          <a v-if="row.files" :href="row.files[0].url">{{ row.files[0].name || row.files[0].fileName }}</a>
+        </template>
+        <template #status="{ row, index }">
+          <div>{{ turnStatus(row.status) }}</div>
+        </template>
+        <template #decryptionMethod="{ row, index }">
+          <div>{{ turnDecryptionMethod(row.decryptionMethod) }}</div>
+        </template>
+      </Table>
+      <Page :total="tableData ? tableData.length : 1" @on-change="changePage" />
+    </div>
   </div>
 </template>
 <script>
@@ -66,7 +73,7 @@ export default {
         },
         {
           title: "签到方式",
-          slot: "status",
+          slot: "decryptionMethod",
         },
         {
           title: "解密时间",
@@ -91,6 +98,8 @@ export default {
       uploadList: [],
       id: 0,
       modalKey: false,
+      page: 1,
+      loading: true,
     };
   },
   created() {
@@ -100,9 +109,14 @@ export default {
     // this.uploadList = this.$refs.upload.fileList;
   },
   methods: {
+    changePage(page) {
+      this.page = page
+    },
     turnStatus(data) {
-      console.log(data);
       return data == 0 ? '未签到' : '已签到'
+    },
+    turnDecryptionMethod(data) {
+      return data == 1 ? '密码解密' : '--'
     },
     handleSearch() { },
     handleEdit(row, index) {
@@ -112,6 +126,7 @@ export default {
       getBids().then((res) => {
         if (res.code == 0) {
           this.tableData = res.data.bids;
+          this.loading = false
         }
       });
     },
@@ -143,6 +158,24 @@ export default {
     &-btn {
       margin-left: 2px;
     }
+  }
+}
+
+.demo-spin-icon-load {
+  animation: ani-demo-spin 1s linear infinite;
+}
+
+@keyframes ani-demo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
