@@ -18,6 +18,9 @@
         <Button @click="handleEdit(row, index, 'success')" type="primary">审核通过</Button>
         <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
       </template>
+      <template #view="{ row, index }">
+        <Button type="primary" @click="show(index)">展示</Button>
+      </template>
       <template #status="{ row, index }">
         <div :style="row.status == 2 ? 'color:red' : row.status == 1 ? 'color:green' : ''">
           {{ turnStatus(row.status) }}
@@ -129,11 +132,6 @@ export default {
           key: "Consignor",
         },
         {
-          width: 130,
-          title: "授权委托人姓名",
-          key: "Consignor",
-        },
-        {
           width: 200,
           title: "营业执照扫描件",
           slot: "img",
@@ -168,12 +166,19 @@ export default {
           title: "审核状态",
           slot: "status",
           key: "status",
+          disable: true
         },
         {
-          // fixed: 'right',
-          width: 180,
+          width: 140,
           title: "审核",
           slot: "action",
+          disable: true
+        },
+        {
+          width: 120,
+          title: "汇总展示",
+          slot: "view",
+          disable: true
         },
       ],
       data: [],
@@ -196,6 +201,24 @@ export default {
     this.getApplications();
   },
   methods: {
+    show(index) {
+      let temp = ""
+      this.columns.forEach((e) => {
+        if (!e.disable) {
+          if (typeof this.tableData[index][e.key] == 'object') {
+            temp += `<div style='font-size:18px'>${e.title}:<a href='${this.tableData[index][e.key][0].url}' >${this.tableData[index][e.key][0].name || this.tableData[index][e.key][0].fileName}</a></div>`
+          }
+          else {
+            temp += `<div style='font-size:18px'>${e.title}:${this.tableData[index][e.key] || '--'}</div>`
+          }
+        }
+      })
+      this.$Modal.info({
+        title: '汇总展示',
+        content: `${temp}`,
+        width: "60%"
+      })
+    },
     changePage(page) {
       this.page = page
     },
@@ -303,5 +326,10 @@ export default {
 .tableImg {
   width: 100px;
   background: #eee;
+}
+
+.table_modal {
+  font-size: 24px;
+  line-height: 24px;
 }
 </style>

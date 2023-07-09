@@ -202,9 +202,9 @@ export default {
       postAnnouncement({
         id: this.id,
         detail: {
-          url: this.uploadList[0].url,
-          fileName: this.uploadList[0].fileName,
-          name: this.uploadList[0].name,
+          url: this.$refs.upload.fileList[0].url,
+          fileName: this.$refs.upload.fileList[0].fileName,
+          name: this.$refs.upload.fileList[0].name,
           businessType: "announcement",
         },
         ...temp,
