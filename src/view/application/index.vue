@@ -12,7 +12,8 @@
         <Icon type="create" />授权委托书模板上传
       </Button>
     </div>
-    <Table :loading="loading" :columns="columns" :data="tableData">
+    <Table :loading="loading" :columns="columns"
+      :data="tableData ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10) : []">
       <template #action="{ row, index }">
         <Button @click="handleEdit(row, index, 'success')" type="primary">审核通过</Button>
         <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
@@ -57,6 +58,7 @@
         }}</a>
       </template>
     </Table>
+    <Page :total="tableData ? tableData.length : 1" @on-change="changePage" />
     <Modal v-model="modal" :title="businessType == 3 ? '上传招标文书二维码' : '授权委托书模板上传'" @on-ok="ok" @on-cancel="cancel"
       width="700">
       <Form ref="form" :model="formItem" :label-width="120" :key="modalKey">
@@ -185,6 +187,7 @@ export default {
       tableImg: "",
       businessType: 3,
       loading: true,
+      page: 1,
     };
   },
   created() { },
@@ -193,6 +196,9 @@ export default {
     this.getApplications();
   },
   methods: {
+    changePage(page) {
+      this.page = page
+    },
     checkPng(data) {
       return data.includes("png") || data.includes("jpg") || data.includes("jpeg")
     },
