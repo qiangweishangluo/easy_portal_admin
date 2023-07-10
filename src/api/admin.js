@@ -1,5 +1,10 @@
 import axios from '@/libs/api.request'
 
+// function password() {
+//     return hex_md5('123456' + new Date().getTime)
+// }
+
+
 export function getBanners() {
     // 首页轮播
     return axios.request({
@@ -12,14 +17,16 @@ export function postBanners(data) {
     return axios.request({
         url: "/api/banners",
         method: "post",
+        // data: { password: password(), ...data },
         data: data,
     });
 }
-export function getAnnouncement() {
+export function getAnnouncement(data) {
     // 公告
     return axios.request({
         url: "/api/announcements",
         method: "get",
+        params: data
     });
 }
 export function postAnnouncement(data) {
@@ -30,6 +37,23 @@ export function postAnnouncement(data) {
         data: data,
     });
 }
+// 新增报名后门
+export function getIdentification() {
+    // 获取密码
+    return axios.request({
+        url: "/api/identification",
+        method: "get",
+    });
+}
+export function postApplication(data) {
+    // 报名接口
+    return axios.request({
+        url: "/api/application",
+        method: "post",
+        data
+    });
+}
+
 export function getApplications() {
     // 获取报名信息
     return axios.request({

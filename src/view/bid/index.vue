@@ -13,7 +13,9 @@
         <Button @click="handleEdit(row, index)">编辑</Button>
       </template> -->
         <template #file="{ row, index }">
-          <a v-if="row.files" :href="row.files[0].url">{{ row.files[0].name || row.files[0].fileName }}</a>
+          <a v-if="row.files && row.downloadable" :href="row.files[0].url">{{ row.files[0].name || row.files[0].fileName
+          }}</a>
+          <div v-else>{{ row.files[0].name || row.files[0].fileName }}</div>
         </template>
         <template #status="{ row, index }">
           <div>{{ turnStatus(row.status) }}</div>
