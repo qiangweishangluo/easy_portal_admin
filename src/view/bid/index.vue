@@ -1,11 +1,11 @@
 <template>
   <div>
-    <!-- <div class="search-con search-con-top">
-      <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
+    <div class="search-con search-con-top">
+      <Input clearable placeholder="搜索投标人" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
-    </div> -->
+    </div>
     <div>
       <Table :loading="loading" :columns="columns"
         :data="tableData ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10) : []">
@@ -88,6 +88,7 @@ export default {
       ],
       // data: [],
       tableData: [],
+      tableDataMeta: [],
       modal: false,
       formItem: {
         code: "",
@@ -120,7 +121,11 @@ export default {
     turnDecryptionMethod(data) {
       return data == 1 ? '密码解密' : '--'
     },
-    handleSearch() { },
+    handleSearch() {
+      this.tableData = this.tableDataMeta.filter((e) => {
+        return (e.bidder.includes(this.searchValue))
+      })
+    },
     handleEdit(row, index) {
       console.log(row, index);
     },
@@ -128,6 +133,7 @@ export default {
       getBids().then((res) => {
         if (res.code == 0) {
           this.tableData = res.data.bids;
+          this.tableDataMeta = res.data.bids;
           this.loading = false
         }
       });

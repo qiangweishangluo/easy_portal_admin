@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <!-- <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
+      <Input clearable placeholder="搜索项目编号/名称" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
-      </Button> -->
+      </Button>
       <Button @click="openModal(3)" class="search-btn" type="primary">
         <Icon type="create" />上传招标文书二维码
       </Button>
@@ -76,10 +76,10 @@
     <Modal v-model="modal1" width="700">
       <img :src="tableImg" alt="" style="display:block;width:100%" />
     </Modal>
-    <Modal v-model="modalForm" title="新增报名" @on-ok="ok" @on-cancel="cancel" width="700">
+    <Modal v-model="modalForm" title="新增报名" :footer-hide="true" width="700">
       <Form ref="form" :model="formItem" :label-width="120" :key="modalKey">
         <FormItem label="项目名称、项目编号">
-          <Select v-model="formItem.code" :loading="loading2" filterable>
+          <Select v-model="formItem.projectCode" :loading="loading2" filterable>
             <Option v-for="(item, index) in options" :key="index" :value="item.code">{{ item.name }}</Option>
           </Select>
         </FormItem>
@@ -129,6 +129,11 @@
           <Button icon="ios-cloud-upload-outline">上传付款凭证
           </Button>
         </Upload>
+        <div style="width: 100%;text-align: center;">
+          <Button @click="ok" type="primary">保存
+          </Button>
+
+        </div>
       </Form>
     </Modal>
   </div>
@@ -239,6 +244,7 @@ export default {
         },
       ],
       data: [],
+      tableDataMeta: [],
       tableData: [],
       modal: false,
       modal1: false,
@@ -280,41 +286,44 @@ export default {
       })
     },
     postApplication() {
-      if (this.$refs.upload6.uploadFiles[0] == undefined ||
-        this.$refs.upload2.uploadFiles[0] == undefined ||
-        this.$refs.upload3.uploadFiles[0] == undefined ||
-        this.$refs.upload4.uploadFiles[0] == undefined ||
-        this.$refs.upload5.uploadFiles[0] == undefined
+      if (this.$refs.upload6.fileList[0] == undefined ||
+        this.$refs.upload2.fileList[0] == undefined ||
+        this.$refs.upload3.fileList[0] == undefined ||
+        this.$refs.upload4.fileList[0] == undefined ||
+        this.$refs.upload5.fileList[0] == undefined
       ) {
-        this.$message.warning('有文件未提交，请核对！')
+        this.$Message.warning('有文件未提交，请核对！')
         return
       }
+      console.log(this.formItem.projectCode);
       postApplication({
-        "projectCode": this.code,
+        "projectCode": this.formItem.projectCode,
         "identification": this.password,
         "detail": {
           ...this.formItem,
           "businessLicenses": [
-            this.$refs.upload2.uploadFiles[0].response.data
+            this.$refs.upload2.fileList[0].response.data
           ],
           "consignors": [
-            this.$refs.upload3.uploadFiles[0].response.data
+            this.$refs.upload3.fileList[0].response.data
           ],
           "corporates": [
-            this.$refs.upload4.uploadFiles[0].response.data
+            this.$refs.upload4.fileList[0].response.data
           ],
           "authorizations": [
-            this.$refs.upload5.uploadFiles[0].response.data
+            this.$refs.upload5.fileList[0].response.data
           ],
           "evidencePayments": [
-            this.$refs.upload6.uploadFiles[0].response.data
+            this.$refs.upload6.fileList[0].response.data
           ]
         }
       }).then((res) => {
         if (res.code == 0) {
-          this.$message.success(
+          this.$Message.success(
             `报名成功！`
           );
+          this.modalForm = false
+          this.getApplications();
         }
       })
     },
@@ -375,11 +384,16 @@ export default {
         res.data.applications.forEach((element) => {
           temp.push({ ...element, ...element.detail });
         });
+        this.tableDataMeta = temp;
         this.tableData = temp;
         this.loading = false
       });
     },
-    handleSearch() { },
+    handleSearch() {
+      this.tableData = this.tableDataMeta.filter((e) => {
+        return (e.projectCode.includes(this.searchValue) || e?.projectName?.includes(this.searchValue))
+      })
+    },
     handleSuccess(res, file) {
       // 上传成功
       if (res.code == 0) {

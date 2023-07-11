@@ -1,15 +1,15 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <!-- <Input clearable placeholder="输入关键字搜索" class="search-input" v-model="searchValue" />
+      <Input clearable placeholder="搜索公告编号/名称" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
-      </Button> -->
+      </Button>
       <Button @click="openModal" class="search-btn" type="primary">
         <Icon type="create" />新建公告
       </Button>
     </div>
-    <Tabs v-model="tabs" @on-click="page = 1">
+    <Tabs v-model="tabs" @on-click="handleSearch(); page = 1">
       <TabPane v-for="(item, index) in tabsOption" :label="item.label" :name="item.name" :key="index">
       </TabPane>
     </Tabs>
@@ -100,6 +100,7 @@ export default {
       ],
       data: [],
       tableData: { purchase: [] },
+      tableDataMeta: { purchase: [] },
       modal: false,
       formItem: {
         code: "",
@@ -156,7 +157,12 @@ export default {
     changePage(page) {
       this.page = page
     },
-    handleSearch() { },
+    handleSearch() {
+      const temp = JSON.parse(JSON.stringify(this.tableDataMeta[this.tabs]))
+      this.$set(this.tableData, this.tabs, temp.filter((e) => {
+        return (e.name.includes(this.searchValue) || e?.code?.includes(this.searchValue))
+      }))
+    },
     handleSuccess(res, file) {
       // 上传成功
       if (res.code == 0) {
@@ -186,6 +192,7 @@ export default {
       getAnnouncement().then((res) => {
         if (res.code == 0) {
           this.tableData = res.data.announcements;
+          this.tableDataMeta = JSON.parse(JSON.stringify(res.data.announcements));
           this.loading = false
         }
       });
