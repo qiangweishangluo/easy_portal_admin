@@ -87,3 +87,11 @@ export function getBids() {
         method: "get",
     });
 }
+export function postClarification(data) {
+    // 更新澄清
+    return axios.request({
+        url: "/api/clarification",
+        method: "post",
+        data: data,
+    });
+}

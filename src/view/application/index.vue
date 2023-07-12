@@ -28,7 +28,6 @@
         <div :style="row.status == 2 ? 'color:red' : row.status == 1 ? 'color:green' : ''">
           {{ turnStatus(row.status) }}
         </div>
-
       </template>
       <template #file="{ row, index }">
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
@@ -295,7 +294,6 @@ export default {
         this.$Message.warning('有文件未提交，请核对！')
         return
       }
-      console.log(this.formItem.projectCode);
       postApplication({
         "projectCode": this.formItem.projectCode,
         "identification": this.password,
@@ -342,6 +340,7 @@ export default {
       this.getAnnouncement()
       this.getIdentification()
     },
+
     show(index) {
       let temp = ""
       this.columns.forEach((e) => {
