@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <Input clearable placeholder="搜索投标人" class="search-input" v-model="searchValue" />
+      <Input clearable placeholder="搜索项目名称/编号" class="search-input" v-model="searchValue" />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
@@ -62,6 +62,16 @@ export default {
       columns: [
         {
           width: 120,
+          title: "项目名称",
+          key: "projectName",
+        },
+        {
+          width: 120,
+          title: "项目编号",
+          key: "projectCode",
+        },
+        {
+          width: 120,
           title: "投标人名称",
           key: "bidder",
         },
@@ -111,7 +121,7 @@ export default {
           slot: "decryptionMethod",
         },
         {
-          width: 120,
+          width: 180,
           title: "解密时间",
           key: "signInTime",
         },
@@ -169,7 +179,7 @@ export default {
     },
     handleSearch() {
       this.tableData = this.tableDataMeta.filter((e) => {
-        return (e.bidder.includes(this.searchValue))
+        return (e.projectCode.includes(this.searchValue) || e?.projectName?.includes(this.searchValue))
       })
     },
     handleEdit(row, index) {
@@ -179,7 +189,6 @@ export default {
       getBids().then((res) => {
         if (res.code == 0) {
           let temp = res.data.bids;
-          console.log(res.data.bids);
           temp.forEach((e) => {
             if (e.clarification) {
               e.quotedPrice2 = e.clarification.quotedPrice
