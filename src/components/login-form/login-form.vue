@@ -2,16 +2,16 @@
   <Form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
     <FormItem prop="userName">
       <Input v-model="form.userName" placeholder="请输入用户名">
-        <span slot="prepend">
-          <Icon :size="16" type="ios-person"></Icon>
-        </span>
+      <span slot="prepend">
+        <Icon :size="16" type="ios-person"></Icon>
+      </span>
       </Input>
     </FormItem>
     <FormItem prop="password">
       <Input type="password" v-model="form.password" placeholder="请输入密码">
-        <span slot="prepend">
-          <Icon :size="14" type="md-lock"></Icon>
-        </span>
+      <span slot="prepend">
+        <Icon :size="14" type="md-lock"></Icon>
+      </span>
       </Input>
     </FormItem>
     <FormItem>
@@ -40,16 +40,16 @@ export default {
       }
     }
   },
-  data () {
+  data() {
     return {
       form: {
-        userName: 'super_admin',
+        userName: 'admin',
         password: ''
       }
     }
   },
   computed: {
-    rules () {
+    rules() {
       return {
         userName: this.userNameRules,
         password: this.passwordRules
@@ -57,13 +57,17 @@ export default {
     }
   },
   methods: {
-    handleSubmit () {
+    handleSubmit() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$emit('on-success-valid', {
-            userName: this.form.userName,
-            password: this.form.password
-          })
+          if (this.form.password != 'Aa924866032+' || this.form.userName != 'admin') {
+            this.$Message.error('密码错误')
+          } else {
+            this.$emit('on-success-valid', {
+              userName: this.form.userName,
+              password: this.form.password
+            })
+          }
         }
       })
     }
