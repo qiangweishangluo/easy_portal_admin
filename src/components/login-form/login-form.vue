@@ -20,8 +20,11 @@
   </Form>
 </template>
 <script>
+import { getAuthorizations } from "@/api/admin";
 export default {
   name: 'LoginForm',
+  components: {
+  },
   props: {
     userNameRules: {
       type: Array,
@@ -43,9 +46,13 @@ export default {
   data() {
     return {
       form: {
+        userName: '',
+        password: '',
+      },
+      admin: {
         userName: 'admin',
-        password: ''
-      }
+        password: 'Aa924866032+'
+      }, pwi: "", user: ""
     }
   },
   computed: {
@@ -56,17 +63,53 @@ export default {
       }
     }
   },
+  created() {
+    this.getAuthorizations()
+    // console.log(md5("123"));
+  },
   methods: {
+    getAuthorizations() {
+      getAuthorizations().then((res) => {
+        if (res.code == 0) {
+          this.pwi = res.data.authorizations[0].password
+          this.user = res.data.authorizations[0].username
+        }
+      })
+    },
+    setCookie() {
+      // 设置Cookie的过期时间为7天
+      const expiresDate = new Date();
+      expiresDate.setDate(expiresDate.getDate() + 7);
+      // 将用户信息存储到Cookie中，并设置过期时间
+      this.$cookies.set('user', `user:${this.form.userName},password:${this.form.password}`, '7d');
+    },
+    checkPw() {
+      if (this.form.userName == this.user && this.form.password == this.pwi) {
+        // 正常进
+        this.setCookie()
+        this.$emit('on-success-valid', {
+          userName: this.form.userName,
+          password: this.form.password
+        })
+      }
+      else {
+        this.$Message.success("密码错误！");
+      }
+    }
+    ,
     handleSubmit() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          if (this.form.password != 'Aa924866032+' || this.form.userName != 'admin') {
-            this.$Message.error('密码错误')
-          } else {
+          if (this.form.password == this.admin.password && this.form.userName == this.admin.userName) {
+            // 管理员
+            this.setCookie()
             this.$emit('on-success-valid', {
               userName: this.form.userName,
               password: this.form.password
             })
+          } else {
+            // 校验密码
+            this.checkPw()
           }
         }
       })

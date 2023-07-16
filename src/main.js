@@ -2,6 +2,8 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import VueCookies from 'vue-cookies';
+Vue.prototype.$cookies = VueCookies
 import router from './router'
 import store from './store'
 import iView from 'iview'
@@ -31,6 +33,7 @@ Vue.use(VueLazyload, {
 })
 Vue.use(TreeTable)
 Vue.use(VOrgTree)
+// Vue.use(VueCookies);
 /**
  * @description 注册admin内置插件
  */

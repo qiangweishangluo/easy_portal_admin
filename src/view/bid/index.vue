@@ -5,9 +5,12 @@
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
+      <Button @click="deleteNode" class="search-btn" type="primary">
+        <Icon type="create" />删除
+      </Button>
     </div>
     <div>
-      <Table :loading="loading" :columns="columns"
+      <Table :loading="loading" :columns="columns" ref="selection"
         :data="tableData ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10) : []">
         <!-- <template #action="{ row, index }">
         <Button @click="handleEdit(row, index)">编辑</Button>
@@ -52,7 +55,7 @@
   </div>
 </template>
 <script>
-import { getBids, postClarification } from "@/api/admin";
+import { getBids, postClarification, postBidDelete } from "@/api/admin";
 
 export default {
   components: {},
@@ -60,6 +63,11 @@ export default {
     return {
       searchValue: "",
       columns: [
+        {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },
         {
           width: 120,
           title: "项目名称",
@@ -168,6 +176,26 @@ export default {
     // this.uploadList = this.$refs.upload.fileList;
   },
   methods: {
+    deleteNode() {
+      if (this.$refs.selection.getSelection().length == 0) {
+        this.$Message.error("未选择！");
+        return
+      }
+      let temp = []
+      this.$refs.selection.getSelection().forEach((e) => {
+        temp.push(e.id)
+      })
+      this.postBidDelete(temp)
+    },
+    postBidDelete(id) {
+      // 删除
+      postBidDelete({ ids: id }).then((res) => {
+        if (res.code == 0) {
+          this.getBids();
+          this.$Message.success("删除成功！");
+        }
+      })
+    },
     changePage(page) {
       this.page = page
     },

@@ -6,7 +6,6 @@ import iView from 'iview'
 import { setToken, getToken, canTurnTo, setTitle } from '@/libs/util'
 import config from '@/config'
 const { homeName } = config
-
 Vue.use(Router)
 const router = new Router({
   routes,
@@ -20,9 +19,33 @@ const turnTo = (to, access, next) => {
   // else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
 }
 
+import { getAuthorizations } from "@/api/admin";
+function check(user, password) {
+  const admin = {
+    userName: 'admin',
+    password: 'Aa924866032+'
+  }
+  const userCookie = $cookies.get('user');
+  if (userCookie == `user:${admin.userName},password:${admin.password}` || userCookie == `user:${user},password:${password}`) {
+    return true
+  }
+  return false
+}
+
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
-  next()
+  getAuthorizations().then((res) => {
+    if (res.code == 0) {
+      if (
+        !check(res.data.authorizations[0].username, res.data.authorizations[0].password) && to.name !== 'login') {
+        next({
+          name: "login"
+        })
+      } else {
+        next()
+      }
+    }
+  })
   // const token = getToken()
   // if (!token && to.name !== LOGIN_PAGE_NAME) {
   //   // 未登录且要跳转的页面不是登录页

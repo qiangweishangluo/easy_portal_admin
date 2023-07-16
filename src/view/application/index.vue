@@ -5,6 +5,9 @@
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
+      <Button @click="deleteNode" class="search-btn" type="primary">
+        <Icon type="create" />删除
+      </Button>
       <Button @click="openModal(3)" class="search-btn" type="primary">
         <Icon type="create" />上传招标文书二维码
       </Button>
@@ -15,7 +18,7 @@
         <Icon type="create" />+
       </Button>
     </div>
-    <Table :loading="loading" :columns="columns"
+    <Table :loading="loading" :columns="columns" ref="selection"
       :data="tableData ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10) : []">
       <template #action="{ row, index }">
         <Button @click="handleEdit(row, index, 'success')" type="primary">审核通过</Button>
@@ -138,7 +141,7 @@
   </div>
 </template>
 <script>
-import { getApplications, postApprove, postReject, getIdentification, postApplication, getAnnouncement } from "@/api/admin";
+import { getApplications, postApprove, postReject, getIdentification, postApplication, getAnnouncement, postApplicationDelete } from "@/api/admin";
 // import { getAnnouncement, postAnnouncement } from "@/api/admin";
 
 export default {
@@ -148,12 +151,22 @@ export default {
       searchValue: "",
       columns: [
         {
+          type: 'selection',
+          width: 60,
+          align: 'center'
+        },
+        {
           width: 100,
           title: "项目编号",
           key: "projectCode",
         },
         {
-          width: 200,
+          width: 100,
+          title: "项目名称",
+          key: "projectName",
+        },
+        {
+          width: 100,
           title: "密码",
           key: "identification",
         },
@@ -180,7 +193,7 @@ export default {
         {
           width: 150,
           title: "营业执照编号",
-          key: "BusinessLicense",
+          key: "businessLicense",
         },
         {
           width: 130,
@@ -190,7 +203,7 @@ export default {
         {
           width: 130,
           title: "授权委托人姓名",
-          key: "Consignor",
+          key: "consignor",
         },
         {
           width: 200,
@@ -221,6 +234,11 @@ export default {
           title: "付款凭证",
           slot: "img5",
           key: "evidencePayments",
+        },
+        {
+          width: 200,
+          title: "报名时间",
+          key: "createTime",
         },
         {
           width: 100,
@@ -278,6 +296,26 @@ export default {
     this.getApplications();
   },
   methods: {
+    deleteNode() {
+      if (this.$refs.selection.getSelection().length == 0) {
+        this.$Message.error("未选择！");
+        return
+      }
+      let temp = []
+      this.$refs.selection.getSelection().forEach((e) => {
+        temp.push(e.id)
+      })
+      this.postApplicationDelete(temp)
+    },
+    postApplicationDelete(id) {
+      // 删除
+      postApplicationDelete({ ids: id }).then((res) => {
+        if (res.code == 0) {
+          this.getApplications();
+          this.$Message.success("删除成功！");
+        }
+      })
+    },
     getAnnouncement() {
       getAnnouncement({ announcementType: 'purchase' }).then((res) => {
         this.options = res.data.announcements.purchase

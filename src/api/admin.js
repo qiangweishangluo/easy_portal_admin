@@ -37,6 +37,14 @@ export function postAnnouncement(data) {
         data: data,
     });
 }
+export function postAnnouncementDelete(data) {
+    // 删除公告
+    return axios.request({
+        url: "/api/announcement/delete",
+        method: "post",
+        data: data,
+    });
+}
 // 新增报名后门
 export function getIdentification() {
     // 获取密码
@@ -79,6 +87,14 @@ export function postReject(data) {
         data: data,
     });
 }
+export function postApplicationDelete(data) {
+    // 报名删除
+    return axios.request({
+        url: "/api/application/delete",
+        method: "post",
+        data: data,
+    });
+}
 
 export function getBids() {
     // 获取投标列表
@@ -91,6 +107,29 @@ export function postClarification(data) {
     // 更新澄清
     return axios.request({
         url: "/api/clarification",
+        method: "post",
+        data: data,
+    });
+}
+export function postBidDelete(data) {
+    // 删除投标
+    return axios.request({
+        url: "/api/bid/delete",
+        method: "post",
+        data: data,
+    });
+}
+export function getAuthorizations() {
+    // 获取用户
+    return axios.request({
+        url: "/api/authorizations",
+        method: "get",
+    });
+}
+export function postAuthorizations(data) {
+    // 添加用户
+    return axios.request({
+        url: "/api/authorization",
         method: "post",
         data: data,
     });
