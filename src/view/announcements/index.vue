@@ -31,30 +31,30 @@
       </template>
     </Table>
     <Page :total="tableData[tabs] ? tableData[tabs].length : 1" @on-change="changePage" />
-    <Modal v-model="modal" title="公告" @on-ok="ok" @on-cancel="cancel" width="700">
+    <Modal v-model="modal" title="公告" :footer-hide="true" width="700">
       <Form ref="form" :model="formItem" :label-width="120" :key="modalKey">
-        <FormItem label="公告编码">
+        <FormItem label="公告编码" prop="code">
           <Input v-model="formItem.code" placeholder="请输入"></Input>
         </FormItem>
-        <FormItem label="公告名称">
+        <FormItem label="公告名称" prop="name">
           <Input v-model="formItem.name" placeholder="请输入"></Input>
         </FormItem>
-        <FormItem label="公告类型">
+        <FormItem label="公告类型" prop="type">
           <Select v-model="formItem.type">
             <Option v-for="(item, index) in Options" :value="item.value" :key="index">{{ item.name }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="报名开始时间">
+        <FormItem label="报名开始时间" prop="startTime">
           <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" placeholder="选择时间" v-model="formItem.startTime"
             style="width: 300px">
           </DatePicker>
         </FormItem>
-        <FormItem label="报名结束时间">
+        <FormItem label="报名结束时间" prop="endTime">
           <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" placeholder="选择时间" v-model="formItem.endTime"
             style="width: 300px">
           </DatePicker>
         </FormItem>
-        <FormItem label="开标时间">
+        <FormItem label="开标时间" prop="time">
           <DatePicker type="datetime" format="yyyy-MM-dd HH:mm" placeholder="选择时间" v-model="formItem.time"
             style="width: 300px">
           </DatePicker>
@@ -67,6 +67,10 @@
           :data="{ ' businessType': 12 }" :on-success="handleSuccess2" :before-upload="handleBeforeUpload2">
           <Button icon="ios-cloud-upload-outline">上传招标文件</Button>
         </Upload>
+        <div style="width: 100%;text-align: center;">
+          <Button @click="ok" type="primary">保存
+          </Button>
+        </div>
       </Form>
     </Modal>
   </div>
@@ -266,43 +270,48 @@ export default {
       });
     },
     postAnnouncement() {
-      if (!(this.$refs.upload.fileList[0] || this.$refs.upload2.fileList[0])) {
-        this.$Message.success("未上传文件！");
-        return
-      }
-      let temp = {
-        name: this.formItem.name,
-        code: this.formItem.code,
-        type: this.formItem.type,
-        time: new Date(this.formItem.time).getTime(),
-        startTime: new Date(this.formItem.startTime).getTime(),
-        endTime: new Date(this.formItem.endTime).getTime(),
-      };
-      postAnnouncement({
-        id: this.id,
-        detail: {
-          announcementDocument: {
-            url: this.$refs.upload.fileList[0].url,
-            fileName: this.$refs.upload.fileList[0].fileName,
-            name: this.$refs.upload.fileList[0].name,
-            businessType: "biddingDocument"
-          },
-          biddingDocument: {
-            url: this.$refs.upload2.fileList[0].url,
-            fileName: this.$refs.upload2.fileList[0].fileName,
-            name: this.$refs.upload2.fileList[0].name,
-            businessType: "announcement"
-          }
-        },
-        ...temp,
-      }).then((res) => {
-        if (res.code == 0) {
-          this.$Message.success("添加成功！");
-          this.getAnnouncement();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          // if (!(this.$refs.upload.fileList[0] || this.$refs.upload2.fileList[0])) {
+          //   this.$Message.error("未上传文件！");
+          //   return
+          // }
+          let temp = {
+            name: this.formItem.name,
+            code: this.formItem.code,
+            type: this.formItem.type,
+            time: new Date(this.formItem.time).getTime(),
+            startTime: new Date(this.formItem.startTime).getTime(),
+            endTime: new Date(this.formItem.endTime).getTime(),
+          };
+          postAnnouncement({
+            id: this.id,
+            detail: {
+              announcementDocument: {
+                url: this.$refs.upload.fileList[0].url,
+                fileName: this.$refs.upload.fileList[0].fileName,
+                name: this.$refs.upload.fileList[0].name,
+                businessType: "biddingDocument"
+              },
+              biddingDocument: {
+                url: this.$refs.upload2.fileList[0].url,
+                fileName: this.$refs.upload2.fileList[0].fileName,
+                name: this.$refs.upload2.fileList[0].name,
+                businessType: "announcement"
+              }
+            },
+            ...temp,
+          }).then((res) => {
+            if (res.code == 0) {
+              this.$Message.success("添加成功！");
+              this.getAnnouncement();
+            } else {
+              this.$Message.error(res.message);
+            }
+          });
         } else {
-          this.$Message.error(res.message);
         }
-      });
+      })
     },
     ok() {
       this.postAnnouncement();

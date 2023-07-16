@@ -282,7 +282,7 @@ export default {
       page: 1,
       password: '',
       extra: {},
-      options: []
+      options: [],
     };
   },
   created() { },
@@ -381,7 +381,7 @@ export default {
 
     show(index) {
       let temp = ""
-      this.columns.forEach((e) => {
+      this.columns.slice(1).forEach((e) => {
         if (!e.disable) {
           if (typeof this.tableData[index][e.key] == 'object') {
             temp += `<div style='font-size:18px'>${e.title}:<a href='${this.tableData[index][e.key][0].url}' >${this.tableData[index][e.key][0].name || this.tableData[index][e.key][0].fileName}</a></div>`

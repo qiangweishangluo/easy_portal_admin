@@ -30,21 +30,32 @@
           <Button type="primary" @click="add(index)">澄清/二次报价</Button>
         </template>
         <template #file2="{ row, index }">
-          <a v-if="row.file" :href="row.file[0].url">{{ row.file[0].name }}</a>
+          <a v-if="row.file"
+            :href="row.clarification.files.find((e) => { return e.businessType == 'clarification' })?.url || ''">{{
+              row.clarification.files.find((e) => { return e.businessType == 'clarification' })?.name || '' }}</a>
+        </template>
+        <template #file3="{ row, index }">
+          <a v-if="row.file"
+            :href="row.clarification.files.find((e) => { return e.businessType == 'quotedPriceFile' })?.url || ''">{{
+              row.clarification.files.find((e) => { return e.businessType == 'quotedPriceFile' })?.name || '' }}</a>
         </template>
       </Table>
       <Page :total="tableData ? tableData.length : 1" @on-change="changePage" />
     </div>
     <Modal v-model="modalForm" title="澄清/二次报价" :footer-hide="true" width="700">
-      <Form ref="form" :model="formItem" :label-width="120">
+      <Form ref="form" :model="formItem" :label-width="160">
         <FormItem label="专家建议">
           <Input v-model="formItem.advise" placeholder="请输入"></Input>
         </FormItem>
-        <FormItem label="是否需要二次报价">
-          <i-Switch v-model="formItem.isQuotedPrice" />
-        </FormItem>
-        <FormItem label="是否需要澄清文件">
-          <i-Switch v-model="formItem.isNeedFile" />
+        <FormItem label="是否需要二次报价/澄清">
+          <i-Switch v-model="iswitch" true-color="green" false-color="blue" size="large">
+            <template #open>
+              <span style="display:inline-block;width: 80px;">二次报价</span>
+            </template>
+            <template #close>
+              <span>澄清文件</span>
+            </template>
+          </i-Switch>
         </FormItem>
         <div style="width: 100%;text-align: center;">
           <Button @click="ok" type="primary">保存
@@ -140,6 +151,11 @@ export default {
         },
         {
           width: 120,
+          title: "二次报价文件",
+          slot: "file3",
+        },
+        {
+          width: 120,
           title: "澄清文件",
           slot: "file2",
         },
@@ -167,6 +183,7 @@ export default {
       modalKey: false,
       page: 1,
       loading: true,
+      iswitch: false,
     };
   },
   created() {
@@ -239,10 +256,13 @@ export default {
     },
     add(index) {
       // 修改二次报价
+      this.iswitch = !this.tableData[index].clarification.isNeedFile
       this.formItem = this.tableData[index].clarification
       this.modalForm = true
     },
     ok() {
+      this.formItem.isNeedFile = !this.iswitch
+      this.formItem.isQuotedPrice = this.iswitch
       this.postClarification({
         ...this.formItem,
         "detail": {
@@ -295,5 +315,13 @@ export default {
   to {
     transform: rotate(360deg);
   }
+}
+
+::v-deep .ivu-switch-large {
+  width: 80px;
+}
+
+::v-deep .ivu-switch-large.ivu-switch-checked:after {
+  left: 58px
 }
 </style>
