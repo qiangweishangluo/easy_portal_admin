@@ -198,11 +198,19 @@ export default {
         this.$Message.error("未选择！");
         return
       }
-      let temp = []
-      this.$refs.selection.getSelection().forEach((e) => {
-        temp.push(e.id)
-      })
-      this.postBidDelete(temp)
+      this.$Modal.confirm({
+        title: '警告',
+        content: '您确认删除吗？',
+        onOk: () => {
+          let temp = []
+          this.$refs.selection.getSelection().forEach((e) => {
+            temp.push(e.id)
+          })
+          this.postBidDelete(temp)
+        },
+        onCancel: () => {
+        }
+      });
     },
     postBidDelete(id) {
       // 删除

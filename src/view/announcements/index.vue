@@ -187,11 +187,19 @@ export default {
         this.$Message.error("未选择！");
         return
       }
-      let temp = []
-      this.$refs.selection.getSelection().forEach((e) => {
-        temp.push(e.id)
-      })
-      this.postAnnouncementDelete(temp)
+      this.$Modal.confirm({
+        title: '警告',
+        content: '您确认删除吗？',
+        onOk: () => {
+          let temp = []
+          this.$refs.selection.getSelection().forEach((e) => {
+            temp.push(e.id)
+          })
+          this.postAnnouncementDelete(temp)
+        },
+        onCancel: () => {
+        }
+      });
     },
     postAnnouncementDelete(id) {
       // 删除公告
@@ -272,10 +280,10 @@ export default {
     postAnnouncement() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          // if (!(this.$refs.upload.fileList[0] || this.$refs.upload2.fileList[0])) {
-          //   this.$Message.error("未上传文件！");
-          //   return
-          // }
+          if (!(this.$refs.upload.fileList[0] || this.$refs.upload2.fileList[0])) {
+            this.$Message.error("未上传文件！");
+            return
+          }
           let temp = {
             name: this.formItem.name,
             code: this.formItem.code,
