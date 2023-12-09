@@ -77,7 +77,7 @@
             <Option
               v-for="(item, index) in options"
               :key="index"
-              :value="item.code"
+              :value="item.showCode"
               >{{ item.name }}</Option
             >
           </Select>

@@ -164,7 +164,7 @@ export default {
         },
         {
           title: "编号",
-          key: "code",
+          key: "showCode",
         },
         {
           title: "开标时间",

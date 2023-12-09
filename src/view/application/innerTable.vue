@@ -23,7 +23,7 @@
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
       <template #identificationT="{ row, index }">
-        <span style='font-family:cursive'>{{ row.identification }}</span>
+        <span style="font-family: cursive">{{ row.identification }}</span>
       </template>
       <template #img="{ row, index }">
         <img
@@ -92,9 +92,7 @@
   </div>
 </template>
 <script>
-import {
-  postApplicationDelete,
-} from "@/api/admin";
+import { postApplicationDelete } from "@/api/admin";
 export default {
   components: {},
   props: ["tableData"],
@@ -280,6 +278,14 @@ export default {
           }
         }
       });
+
+      temp += `
+      <a style='display:block;margin-top:20px' href='${
+        window.location.origin +
+        "/api/downloadApplication?identification=" +
+        this.tableData[index].identification
+      }'>下载excel</a>
+      `;
       this.$Modal.info({
         title: "汇总展示",
         content: `${temp}`,
