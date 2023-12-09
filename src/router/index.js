@@ -37,7 +37,8 @@ router.beforeEach((to, from, next) => {
   getAuthorizations().then((res) => {
     if (res.code == 0) {
       if (
-        !check(res.data.authorizations[0].username, res.data.authorizations[0].password) && to.name !== 'login') {
+        res.data?.authorizations!=null&&
+        !check(res.data?.authorizations[0].username, res.data?.authorizations[0].password) && to.name !== 'login') {
         next({
           name: "login"
         })

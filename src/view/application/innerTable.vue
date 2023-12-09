@@ -22,6 +22,9 @@
       <template #file="{ row, index }">
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
+      <template #identificationT="{ row, index }">
+        <span style='font-family:cursive'>{{ row.identification }}</span>
+      </template>
       <template #img="{ row, index }">
         <img
           v-if="checkPng(row.businessLicenses[0].fileName)"
@@ -132,7 +135,8 @@ export default {
         {
           width: 100,
           title: "密码",
-          key: "identification",
+          slot: "identificationT",
+          key: "identificationT",
         },
         {
           width: 150,
