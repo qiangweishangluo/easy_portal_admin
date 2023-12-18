@@ -36,10 +36,10 @@
         >
         <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
       </template>
-      <template #view="{ row, index }">
+      <template #view="{ index }">
         <Button type="primary" @click="show(index)">展示</Button>
       </template>
-      <template #status="{ row, index }">
+      <template #status="{ row }">
         <div
           :style="
             row.status == 2 ? 'color:red' : row.status == 1 ? 'color:green' : ''
@@ -190,6 +190,9 @@ export default {
             return h(innerTable, {
               props: {
                 tableData: row.row.detail,
+              },
+              on: {
+                getApplications: this.getApplications,
               },
             });
           },
@@ -456,7 +459,7 @@ export default {
 
             temp2.filter((el) => {
               if (el.projectCode === e.projectCode) {
-                el.detail.push({ ...e })
+                el.detail.push({ ...e });
               }
             });
           }

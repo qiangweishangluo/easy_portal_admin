@@ -7,10 +7,10 @@
         >
         <Button @click="handleEdit(row, index, 'false')">审核不通过</Button>
       </template>
-      <template #view="{ row, index }">
+      <template #view="{ index }">
         <Button type="primary" @click="show(index)">展示</Button>
       </template>
-      <template #status="{ row, index }">
+      <template #status="{ row }">
         <div
           :style="
             row.status == 2 ? 'color:red' : row.status == 1 ? 'color:green' : ''
@@ -19,13 +19,13 @@
           {{ turnStatus(row.status) }}
         </div>
       </template>
-      <template #file="{ row, index }">
+      <template #file="{ row }">
         <a v-if="row.detail" :href="row.detail.url">{{ row.name }}</a>
       </template>
-      <template #identificationT="{ row, index }">
+      <template #identificationT="{ row }">
         <span style="font-family: cursive">{{ row.identification }}</span>
       </template>
-      <template #img="{ row, index }">
+      <template #img="{ row }">
         <img
           v-if="checkPng(row.businessLicenses[0].fileName)"
           class="tableImg"
@@ -37,7 +37,7 @@
           row.businessLicenses[0].name || row.businessLicenses[0].fileName
         }}</a>
       </template>
-      <template #img2="{ row, index }">
+      <template #img2="{ row }">
         <img
           v-if="checkPng(row.consignors[0].fileName)"
           class="tableImg"
@@ -49,7 +49,7 @@
           row.consignors[0].name || row.consignors[0].fileName
         }}</a>
       </template>
-      <template #img3="{ row, index }">
+      <template #img3="{ row }">
         <img
           v-if="checkPng(row.corporates[0].fileName)"
           class="tableImg"
@@ -61,7 +61,7 @@
           row.corporates[0].name || row.corporates[0].fileName
         }}</a>
       </template>
-      <template #img4="{ row, index }">
+      <template #img4="{ row }">
         <img
           v-if="checkPng(row.authorizations[0].fileName)"
           class="tableImg"
@@ -73,7 +73,7 @@
           row.authorizations[0].name || row.authorizations[0].fileName
         }}</a>
       </template>
-      <template #img5="{ row, index }">
+      <template #img5="{ row }">
         <img
           v-if="checkPng(row.evidencePayments[0].fileName)"
           class="tableImg"
@@ -85,14 +85,14 @@
           row.evidencePayments[0].name || row.evidencePayments[0].fileName
         }}</a>
       </template>
-      <template #delete="{ row, index }">
+      <template #delete="{ index }">
         <Button type="primary" @click="deleteNode(index)">删除</Button>
       </template>
     </Table>
   </div>
 </template>
 <script>
-import { postApplicationDelete } from "@/api/admin";
+import { postApplicationDelete, postApprove } from "@/api/admin";
 export default {
   components: {},
   props: ["tableData"],
@@ -232,6 +232,26 @@ export default {
   },
   mounted() {},
   methods: {
+    handleEdit(row, index, status) {
+      const temp = {
+        id: row.id, // applicationId
+        projectCode: row.projectCode,
+        identification: row.identification,
+      };
+      status == "success" ? this.postApprove(temp) : this.postReject(temp);
+    },
+    postApprove(data) {
+      // 已通过
+      postApprove(data).then((res) => {
+        this.$emit("getApplications");
+      });
+    },
+    postReject(data) {
+      //已拒绝
+      postReject(data).then((res) => {
+        this.$emit("getApplications");
+      });
+    },
     deleteNode() {
       if (this.$refs.selection.getSelection().length == 0) {
         this.$Message.error("未选择！");
@@ -245,8 +265,8 @@ export default {
           this.$refs.selection.getSelection().forEach((e) => {
             temp.push(e.id);
           });
-          console.log(temp);
-          // this.postApplicationDelete(temp);
+          // console.log(temp);
+          this.postApplicationDelete(temp);
         },
         onCancel: () => {},
       });
@@ -255,7 +275,7 @@ export default {
       // 删除
       postApplicationDelete({ ids: id }).then((res) => {
         if (res.code == 0) {
-          this.getApplications();
+          this.$emit("getApplications");
           this.$Message.success("删除成功！");
         }
       });
