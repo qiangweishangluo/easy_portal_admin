@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <Input clearable placeholder="搜索项目名称/编号" class="search-input" v-model="searchValue" />
+      <Input
+        clearable
+        placeholder="搜索项目名称/编号"
+        class="search-input"
+        v-model="searchValue"
+      />
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="search" />&nbsp;&nbsp;搜索
       </Button>
@@ -10,56 +15,91 @@
       </Button>
     </div>
     <div>
-      <Table :loading="loading" :columns="columns" ref="selection"
-        :data="tableData ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10) : []">
-        <!-- <template #action="{ row, index }">
-        <Button @click="handleEdit(row, index)">编辑</Button>
-      </template> -->
-        <template #file="{ row, index }">
-          <a v-if="row.files && row.downloadable" :href="row.files[0].url">{{ row.files[0].name || row.files[0].fileName
+      <Table
+        :loading="loading"
+        :columns="columns"
+        ref="selection"
+        :data="
+          tableData
+            ? tableData.slice((page - 1) * 10, (page - 1) * 10 + 10)
+            : []
+        "
+      >
+        <template #file="{ row }">
+          <a v-if="row.files && row.downloadable" :href="row.files[0].url">{{
+            row.files[0].name || row.files[0].fileName
           }}</a>
           <div v-else>{{ row.files[0].name || row.files[0].fileName }}</div>
         </template>
-        <template #status="{ row, index }">
+        <template #status="{ row }">
           <div>{{ turnStatus(row.status) }}</div>
         </template>
-        <template #decryptionMethod="{ row, index }">
+        <template #decryptionMethod="{ row }">
           <div>{{ turnDecryptionMethod(row.decryptionMethod) }}</div>
         </template>
-        <template #add="{ row, index }">
+        <template #add="{ index }">
           <Button type="primary" @click="add(index)">澄清/二次报价</Button>
         </template>
-        <template #file2="{ row, index }">
-          <a v-if="row.file"
-            :href="row.clarification.files.find((e) => { return e.businessType == 'clarification' })?.url || ''">{{
-              row.clarification.files.find((e) => { return e.businessType == 'clarification' })?.name || '' }}</a>
+        <template #file2="{ row }">
+          <a
+            v-if="row.file"
+            :href="
+              row.clarification.files.find((e) => {
+                return e.businessType === 'clarification';
+              }).url || ''
+            "
+            >{{
+              row.clarification.files.find((e) => {
+                return e.businessType === "clarification";
+              }).name || ""
+            }}</a
+          >
         </template>
-        <template #file3="{ row, index }">
-          <a v-if="row.file"
-            :href="row.clarification.files.find((e) => { return e.businessType == 'quotedPriceFile' })?.url || ''">{{
-              row.clarification.files.find((e) => { return e.businessType == 'quotedPriceFile' })?.name || '' }}</a>
+        <template #file3="{ row }">
+          <a
+            v-if="row.file"
+            :href="
+              row.clarification.files.find((e) => {
+                return e.businessType === 'quotedPriceFile';
+              }).url || ''
+            "
+            >{{
+              row.clarification.files.find((e) => {
+                return e.businessType === "quotedPriceFile";
+              }).name || ""
+            }}</a
+          >
         </template>
       </Table>
       <Page :total="tableData ? tableData.length : 1" @on-change="changePage" />
     </div>
-    <Modal v-model="modalForm" title="澄清/二次报价" :footer-hide="true" width="700">
+    <Modal
+      v-model="modalForm"
+      title="澄清/二次报价"
+      :footer-hide="true"
+      width="700"
+    >
       <Form ref="form" :model="formItem" :label-width="160">
         <FormItem label="专家建议">
           <Input v-model="formItem.advise" placeholder="请输入"></Input>
         </FormItem>
         <FormItem label="是否需要二次报价/澄清">
-          <i-Switch v-model="iswitch" true-color="green" false-color="blue" size="large">
+          <i-Switch
+            v-model="iswitch"
+            true-color="green"
+            false-color="blue"
+            size="large"
+          >
             <template #open>
-              <span style="display:inline-block;width: 80px;">二次报价</span>
+              <span style="display: inline-block; width: 80px">二次报价</span>
             </template>
             <template #close>
               <span>澄清文件</span>
             </template>
           </i-Switch>
         </FormItem>
-        <div style="width: 100%;text-align: center;">
-          <Button @click="ok" type="primary">保存
-          </Button>
+        <div style="width: 100%; text-align: center">
+          <Button @click="ok" type="primary">保存 </Button>
         </div>
       </Form>
     </Modal>
@@ -75,9 +115,9 @@ export default {
       searchValue: "",
       columns: [
         {
-          type: 'selection',
+          type: "selection",
           width: 60,
-          align: 'center'
+          align: "center",
         },
         {
           width: 120,
@@ -163,7 +203,7 @@ export default {
           width: 140,
           title: "澄清/二次报价",
           slot: "add",
-          disable: true
+          disable: true,
         },
         // {
         //   title: "操作",
@@ -175,7 +215,8 @@ export default {
       tableDataMeta: [],
       modal: false,
       formItem: {
-        isQuotedPrice: false, isNeedFile: false
+        isQuotedPrice: false,
+        isNeedFile: false,
       },
       modalForm: false,
       uploadList: [],
@@ -196,20 +237,19 @@ export default {
     deleteNode() {
       if (this.$refs.selection.getSelection().length == 0) {
         this.$Message.error("未选择！");
-        return
+        return;
       }
       this.$Modal.confirm({
-        title: '警告',
-        content: '您确认删除吗？',
+        title: "警告",
+        content: "您确认删除吗？",
         onOk: () => {
-          let temp = []
+          let temp = [];
           this.$refs.selection.getSelection().forEach((e) => {
-            temp.push(e.id)
-          })
-          this.postBidDelete(temp)
+            temp.push(e.id);
+          });
+          this.postBidDelete(temp);
         },
-        onCancel: () => {
-        }
+        onCancel: () => {},
       });
     },
     postBidDelete(id) {
@@ -219,21 +259,24 @@ export default {
           this.getBids();
           this.$Message.success("删除成功！");
         }
-      })
+      });
     },
     changePage(page) {
-      this.page = page
+      this.page = page;
     },
     turnStatus(data) {
-      return data == 0 ? '未签到' : '已签到'
+      return data == 0 ? "未签到" : "已签到";
     },
     turnDecryptionMethod(data) {
-      return data == 1 ? '密码解密' : '--'
+      return data == 1 ? "密码解密" : "--";
     },
     handleSearch() {
       this.tableData = this.tableDataMeta.filter((e) => {
-        return (e.projectCode.includes(this.searchValue) || e?.projectName?.includes(this.searchValue))
-      })
+        return (
+          e.projectCode.includes(this.searchValue) ||
+          e?.projectName?.includes(this.searchValue)
+        );
+      });
     },
     handleEdit(row, index) {
       console.log(row, index);
@@ -244,39 +287,39 @@ export default {
           let temp = res.data.bids;
           temp.forEach((e) => {
             if (e.clarification) {
-              e.quotedPrice2 = e.clarification.quotedPrice
-              e.file = e.clarification.files
+              e.quotedPrice2 = e.clarification.quotedPrice;
+              e.file = e.clarification.files;
             }
-          })
+          });
           this.tableData = temp;
           this.tableDataMeta = temp;
-          this.loading = false
+          this.loading = false;
         }
       });
     },
     postClarification(data) {
       postClarification(data).then((res) => {
         if (res.code == 0) {
-          this.$Message.success('保存成功')
-          this.modalForm = false
+          this.$Message.success("保存成功");
+          this.modalForm = false;
         }
       });
     },
     add(index) {
       // 修改二次报价
-      this.iswitch = !this.tableData[index].clarification.isNeedFile
-      this.formItem = this.tableData[index].clarification
-      this.modalForm = true
+      this.iswitch = !this.tableData[index].clarification.isNeedFile;
+      this.formItem = this.tableData[index].clarification;
+      this.modalForm = true;
     },
     ok() {
-      this.formItem.isNeedFile = !this.iswitch
-      this.formItem.isQuotedPrice = this.iswitch
+      this.formItem.isNeedFile = !this.iswitch;
+      this.formItem.isQuotedPrice = this.iswitch;
       this.postClarification({
         ...this.formItem,
-        "detail": {
-          ...this.formItem
+        detail: {
+          ...this.formItem,
         },
-      })
+      });
     },
     cancel() {
       // this.$Message.info('Clicked ok');
@@ -330,6 +373,6 @@ export default {
 }
 
 ::v-deep .ivu-switch-large.ivu-switch-checked:after {
-  left: 58px
+  left: 58px;
 }
 </style>

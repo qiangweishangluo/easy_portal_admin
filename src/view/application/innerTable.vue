@@ -92,7 +92,10 @@
   </div>
 </template>
 <script>
-import { postApplicationDelete, postApprove } from "@/api/admin";
+// import FileSaver from "file-saver";
+// import domtoimage from "dom-to-image";
+import html2canvas from "html2canvas";
+import { postApplicationDelete, postApprove, postReject } from "@/api/admin";
 export default {
   components: {},
   props: ["tableData"],
@@ -227,11 +230,23 @@ export default {
       options: [],
     };
   },
-  created() {
-    console.log(this.tableData);
-  },
+  created() {},
   mounted() {},
   methods: {
+    check() {
+      // console.log(document.getElementById("test"));
+      // const node = document.getElementById("test");
+      // html2canvas(node, {
+      //   scale: 2,
+      //   width: node.offsetWidth,
+      //   height: node.offsetHeight,
+      //   allowTaint: true, // 允许污染画布
+      //   proxy: "/imgProxy",
+      // }).then((canvas) => {
+      //   let imgUrl = canvas.toDataURL("image/png", 1);
+      //   console.log(imgUrl);
+      // });
+    },
     handleEdit(row, index, status) {
       const temp = {
         id: row.id, // applicationId
@@ -299,6 +314,15 @@ export default {
         }
       });
 
+      // temp += `
+      // <a style='display:block;margin-top:20px' href='${
+      //   window.location.origin +
+      //   "/api/downloadApplication?identification=" +
+      //   this.tableData[index].identification
+      // }'>下载excel</a>
+      // <button class='check'>check</button>
+      // </div>
+      // `;
       temp += `
       <a style='display:block;margin-top:20px' href='${
         window.location.origin +
@@ -311,6 +335,11 @@ export default {
         content: `${temp}`,
         width: "60%",
       });
+      // this.$nextTick(() => {
+      //   document.querySelectorAll(".check")[0].addEventListener("click", () => {
+      //     this.check();
+      //   });
+      // });
     },
     turnStatus(data) {
       // 0为默认值初始值  1:已通过 2:已拒绝
