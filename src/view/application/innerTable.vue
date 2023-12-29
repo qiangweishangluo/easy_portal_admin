@@ -92,7 +92,7 @@
   </div>
 </template>
 <script>
-// import FileSaver from "file-saver";
+import FileSaver from "file-saver";
 // import domtoimage from "dom-to-image";
 import html2canvas from "html2canvas";
 import { postApplicationDelete, postApprove, postReject } from "@/api/admin";
@@ -234,18 +234,19 @@ export default {
   mounted() {},
   methods: {
     check() {
-      // console.log(document.getElementById("test"));
-      // const node = document.getElementById("test");
-      // html2canvas(node, {
-      //   scale: 2,
-      //   width: node.offsetWidth,
-      //   height: node.offsetHeight,
-      //   allowTaint: true, // 允许污染画布
-      //   proxy: "/imgProxy",
-      // }).then((canvas) => {
-      //   let imgUrl = canvas.toDataURL("image/png", 1);
-      //   console.log(imgUrl);
-      // });
+      const node = document.getElementById("test");
+      html2canvas(node, {
+        scale: 2,
+        width: node.offsetWidth,
+        height: node.offsetHeight,
+        allowTaint: true, // 允许污染画布
+        proxy: "/imgProxy",
+      }).then((canvas) => {
+        // let imgUrl = canvas.toDataURL("image/png", 1);
+        canvas.toBlob(function(blob) {
+            FileSaver(blob, "hangge.png");
+          });
+      });
     },
     handleEdit(row, index, status) {
       const temp = {
@@ -296,7 +297,7 @@ export default {
       });
     },
     show(index) {
-      let temp = "";
+      let temp = "<div id='test'>";
       this.columns.slice(1).forEach((e) => {
         if (!e.disable) {
           if (typeof this.tableData[index][e.key] == "object") {
@@ -314,32 +315,34 @@ export default {
         }
       });
 
+      temp += `
+      </div><a style='display:block;margin-top:20px' href='${
+        window.location.origin +
+        "/api/downloadApplication?identification=" +
+        this.tableData[index].identification
+      }'>下载excel</a>
+      <button class='check'>check</button>
+
+      `;
       // temp += `
       // <a style='display:block;margin-top:20px' href='${
       //   window.location.origin +
       //   "/api/downloadApplication?identification=" +
       //   this.tableData[index].identification
       // }'>下载excel</a>
-      // <button class='check'>check</button>
-      // </div>
       // `;
-      temp += `
-      <a style='display:block;margin-top:20px' href='${
-        window.location.origin +
-        "/api/downloadApplication?identification=" +
-        this.tableData[index].identification
-      }'>下载excel</a>
-      `;
       this.$Modal.info({
         title: "汇总展示",
         content: `${temp}`,
         width: "60%",
       });
-      // this.$nextTick(() => {
-      //   document.querySelectorAll(".check")[0].addEventListener("click", () => {
-      //     this.check();
-      //   });
-      // });
+      console.log( this.tableData[index]);
+      return
+      this.$nextTick(() => {
+        document.querySelectorAll(".check")[0].addEventListener("click", () => {
+          this.check();
+        });
+      });
     },
     turnStatus(data) {
       // 0为默认值初始值  1:已通过 2:已拒绝
