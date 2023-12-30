@@ -180,6 +180,7 @@ export default {
   data() {
     return {
       searchValue: "",
+      iindex: 0,
       columns: [
         {
           type: "selection",
@@ -190,6 +191,7 @@ export default {
             return h(innerTable, {
               props: {
                 tableData: row.row.detail,
+                iindex: row.row.projectCode,
               },
               on: {
                 getApplications: this.getApplications,

@@ -89,16 +89,66 @@
         <Button type="primary" @click="deleteNode(index)">删除</Button>
       </template>
     </Table>
+    <Modal v-model="modal" width="40%" title="汇总展示">
+      <div :id="'test' + iindex" class="test">
+        <div style="text-align: center; font-size: 24px">采购文件登记表</div>
+        <div>
+          <img :src="maxLogo" style="height: 45px" />
+          <div style="display: inline-block; float: right;font">
+            黑龙江辰泰信德项目管理有限公司
+          </div>
+        </div>
+        <div style="border: 1px solid #000">
+          <div v-for="(item, i) in fileList" :key="i" style="">
+            <div
+              style="
+                display: inline-block;
+                width: 30%;
+                border-right: 1px solid #000;
+                border-bottom: 1px solid #000;
+                padding: 5px;
+              "
+            >
+              {{ item.label + ":" }}
+            </div>
+            <div
+              style="
+                display: inline-block;
+                border-bottom: 1px solid #000;
+                width: 70%;
+                padding: 5px;
+              "
+            >
+              {{ tableData[modalIndex][item.value] }}
+            </div>
+          </div>
+        </div>
+        <div>
+          附件材料：
+          <div v-for="(item, i) in downList" :key="i">
+            <div style="display: inline-block; width: 45%; padding: 5px">
+              {{ item.label + ":" }}
+            </div>
+            <a :href="tableData[modalIndex][item.value][0].url">{{
+              tableData[modalIndex][item.value][0].name ||
+              tableData[modalIndex][item.value][0].fileName
+            }}</a>
+          </div>
+        </div>
+      </div>
+      <Button @click="check" style="margin-left: 20px">下载截图 </Button>
+    </Modal>
   </div>
 </template>
 <script>
+import maxLogo from "@/assets/images/logo.png";
 import FileSaver from "file-saver";
 // import domtoimage from "dom-to-image";
 import html2canvas from "html2canvas";
 import { postApplicationDelete, postApprove, postReject } from "@/api/admin";
 export default {
   components: {},
-  props: ["tableData"],
+  props: ["tableData", "iindex"],
   data() {
     return {
       searchValue: "",
@@ -228,13 +278,34 @@ export default {
       password: "",
       extra: {},
       options: [],
+      fileList: [
+        { label: "项目名称", value: "projectName" },
+        { label: "项目编号", value: "projectCode" },
+        { label: "单位名称", value: "company" },
+        { label: "单位地址", value: "address" },
+        { label: "统一信用代码号", value: "businessLicense" },
+        { label: "法定代表人姓名", value: "corporate" },
+        { label: "委托授权人姓名", value: "consignor" },
+        { label: "联系人姓名", value: "applicantName" },
+        { label: "获取日期", value: "updateTime" },
+      ],
+      modal: false,
+      modalIndex: 0,
+      maxLogo,
+      downList: [
+        { label: "营业执照扫描件", value: "businessLicenses" },
+        { label: "法定代表人授权委托书", value: "authorizations" },
+        { label: "法定代表人身份证扫描件", value: "corporates" },
+        { label: "委托授权人身份证扫描件", value: "consignors" },
+      ],
     };
   },
   created() {},
   mounted() {},
   methods: {
     check() {
-      const node = document.getElementById("test");
+      this.$Spin.show();
+      const node = document.getElementById("test" + this.iindex);
       html2canvas(node, {
         scale: 2,
         width: node.offsetWidth,
@@ -243,9 +314,16 @@ export default {
         proxy: "/imgProxy",
       }).then((canvas) => {
         // let imgUrl = canvas.toDataURL("image/png", 1);
-        canvas.toBlob(function(blob) {
-            FileSaver(blob, "hangge.png");
-          });
+        // console.log(imgUrl);
+        canvas.toBlob((blob) => {
+          FileSaver(
+            blob,
+            "采购文件登记表-" +
+              this.tableData[this.modalIndex].consignor +
+              ".png"
+          );
+          this.$Spin.hide();
+        });
       });
     },
     handleEdit(row, index, status) {
@@ -297,52 +375,8 @@ export default {
       });
     },
     show(index) {
-      let temp = "<div id='test'>";
-      this.columns.slice(1).forEach((e) => {
-        if (!e.disable) {
-          if (typeof this.tableData[index][e.key] == "object") {
-            temp += `<div style='font-size:18px'>${e.title}:<a href='${
-              this.tableData[index][e.key][0].url
-            }' >${
-              this.tableData[index][e.key][0].name ||
-              this.tableData[index][e.key][0].fileName
-            }</a></div>`;
-          } else {
-            temp += `<div style='font-size:18px'>${e.title}:${
-              this.tableData[index][e.key] || "--"
-            }</div>`;
-          }
-        }
-      });
-
-      temp += `
-      </div><a style='display:block;margin-top:20px' href='${
-        window.location.origin +
-        "/api/downloadApplication?identification=" +
-        this.tableData[index].identification
-      }'>下载excel</a>
-      <button class='check'>check</button>
-
-      `;
-      // temp += `
-      // <a style='display:block;margin-top:20px' href='${
-      //   window.location.origin +
-      //   "/api/downloadApplication?identification=" +
-      //   this.tableData[index].identification
-      // }'>下载excel</a>
-      // `;
-      this.$Modal.info({
-        title: "汇总展示",
-        content: `${temp}`,
-        width: "60%",
-      });
-      console.log( this.tableData[index]);
-      return
-      this.$nextTick(() => {
-        document.querySelectorAll(".check")[0].addEventListener("click", () => {
-          this.check();
-        });
-      });
+      this.modal = true;
+      this.modalIndex = index;
     },
     turnStatus(data) {
       // 0为默认值初始值  1:已通过 2:已拒绝
@@ -404,5 +438,9 @@ export default {
 .table_modal {
   font-size: 24px;
   line-height: 24px;
+}
+.test {
+  font-size: 20px;
+  padding: 25px;
 }
 </style>
