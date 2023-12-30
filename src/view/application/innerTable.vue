@@ -99,7 +99,7 @@
           </div>
         </div>
         <div style="border: 1px solid #000">
-          <div v-for="(item, i) in fileList" :key="i" style="">
+          <div v-for="(item, i) in fileList" :key="i" style="overflow:hidden">
             <div
               style="
                 display: inline-block;
@@ -107,6 +107,7 @@
                 border-right: 1px solid #000;
                 border-bottom: 1px solid #000;
                 padding: 5px;
+                box-sizing: border-box;
               "
             >
               {{ item.label + ":" }}
@@ -117,6 +118,8 @@
                 border-bottom: 1px solid #000;
                 width: 70%;
                 padding: 5px;
+                white-space: nowrap;
+                box-sizing: border-box;
               "
             >
               {{ tableData[modalIndex][item.value] }}
@@ -126,7 +129,7 @@
         <div>
           附件材料：
           <div v-for="(item, i) in downList" :key="i">
-            <div style="display: inline-block; width: 45%; padding: 5px">
+            <div style="display: inline-block; width: 36%; padding: 5px">
               {{ item.label + ":" }}
             </div>
             <a :href="tableData[modalIndex][item.value][0].url">{{
@@ -440,7 +443,8 @@ export default {
   line-height: 24px;
 }
 .test {
-  font-size: 20px;
+  font-size: 16px;
   padding: 25px;
+  box-sizing: border-box;
 }
 </style>
