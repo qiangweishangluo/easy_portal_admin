@@ -91,7 +91,7 @@
     </Table>
     <Modal v-model="modal" width="40%" title="汇总展示">
       <div :id="'test' + iindex" class="test">
-        <div style="text-align: center; font-size: 24px">采购文件登记表</div>
+        <div style="text-align: center; font-size: 24px">获取招标文件登记表</div>
         <div>
           <img :src="maxLogo" style="height: 45px" />
           <div style="display: inline-block; float: right;font">
@@ -321,7 +321,7 @@ export default {
         canvas.toBlob((blob) => {
           FileSaver(
             blob,
-            "采购文件登记表-" +
+            "获取招标文件登记表-" +
               this.tableData[this.modalIndex].consignor +
               ".png"
           );
